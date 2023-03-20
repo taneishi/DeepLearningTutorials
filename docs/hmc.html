@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Recurrent Neural Networks with Word Embeddings" href="rnnslu.html" />
@@ -63,8 +64,8 @@ familiar with Theano and energy-based models such as the RBM.</p>
 <p>Maximum likelihood learning of energy-based models requires a robust algorithm
 to sample negative phase particles (see Eq.(4) of the <a class="reference internal" href="rbm.html"><span class="doc">Restricted Boltzmann Machines (RBM)</span></a> tutorial).
 When training RBMs with CD or PCD, this is typically done with block Gibbs
-sampling, where the conditional distributions <span class="math">p(h|v)</span> and
-<span class="math">p(v|h)</span> are used as the transition operators of the Markov chain.</p>
+sampling, where the conditional distributions <span class="math notranslate nohighlight">\(p(h|v)\)</span> and
+<span class="math notranslate nohighlight">\(p(v|h)\)</span> are used as the transition operators of the Markov chain.</p>
 <p>In certain cases however, these conditional distributions might be difficult
 to sample from (i.e. requiring expensive matrix inversions, as in the case of
 the “mean-covariance RBM”). Also, even if Gibbs sampling can be done
@@ -77,66 +78,66 @@ potentially avoiding tricky conditional distributions in the process.</p>
 <p>In HMC, model samples are obtained by simulating a physical system, where
 particles move about a high-dimensional landscape, subject to potential and
 kinetic energies.  Adapting the notation from <a class="reference internal" href="#neal93" id="id2"><span>[Neal93]</span></a>, particles are
-characterized by a position vector or state <span class="math">s \in \mathcal{R}^D</span> and
-velocity vector <span class="math">\phi \in \mathcal{R}^D</span>. The combined state of a
-particle is denoted as <span class="math">\chi=(s,\phi)</span>. The Hamiltonian is then defined
-as the sum of potential energy <span class="math">E(s)</span> (same energy function defined by
-energy-based models) and kinetic energy <span class="math">K(\phi)</span>, as follows:</p>
-<div class="math">
-<p><span class="math">\mathcal{H}(s,\phi) = E(s) + K(\phi)
-                          = E(s) + \frac{1}{2} \sum_i \phi_i^2</span></p>
-</div><p>Instead of sampling <span class="math">p(s)</span> directly, HMC operates by sampling from the
+characterized by a position vector or state <span class="math notranslate nohighlight">\(s \in \mathcal{R}^D\)</span> and
+velocity vector <span class="math notranslate nohighlight">\(\phi \in \mathcal{R}^D\)</span>. The combined state of a
+particle is denoted as <span class="math notranslate nohighlight">\(\chi=(s,\phi)\)</span>. The Hamiltonian is then defined
+as the sum of potential energy <span class="math notranslate nohighlight">\(E(s)\)</span> (same energy function defined by
+energy-based models) and kinetic energy <span class="math notranslate nohighlight">\(K(\phi)\)</span>, as follows:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{H}(s,\phi) = E(s) + K(\phi)
+                          = E(s) + \frac{1}{2} \sum_i \phi_i^2\]</div>
+<p>Instead of sampling <span class="math notranslate nohighlight">\(p(s)\)</span> directly, HMC operates by sampling from the
 canonical distribution
-<span class="math">p(s,\phi) = \frac{1}{Z} \exp(-\mathcal{H}(s,\phi))=p(s)p(\phi)</span>.
+<span class="math notranslate nohighlight">\(p(s,\phi) = \frac{1}{Z} \exp(-\mathcal{H}(s,\phi))=p(s)p(\phi)\)</span>.
 Because the two variables are independent, marginalizing over
-<span class="math">\phi</span> is trivial and recovers the original distribution of
+<span class="math notranslate nohighlight">\(\phi\)</span> is trivial and recovers the original distribution of
 interest.</p>
 <p><strong>Hamiltonian Dynamics</strong></p>
-<p>State <span class="math">s</span> and velocity <span class="math">\phi</span> are modified such that
-<span class="math">\mathcal{H}(s,\phi)</span> remains constant throughout the simulation.
+<p>State <span class="math notranslate nohighlight">\(s\)</span> and velocity <span class="math notranslate nohighlight">\(\phi\)</span> are modified such that
+<span class="math notranslate nohighlight">\(\mathcal{H}(s,\phi)\)</span> remains constant throughout the simulation.
 The differential equations are given by:</p>
-<div class="math" id="equation-ds-dt">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-ds-dt" title="Permalink to this equation">¶</a></span><span class="math">\frac{ds_i}{dt} &amp;= \frac{\partial \mathcal{H}}{\partial \phi_i} = \phi_i \\
+<div class="math notranslate nohighlight" id="equation-ds-dt">
+<span class="eqno">(1)<a class="headerlink" href="#equation-ds-dt" title="Permalink to this equation">¶</a></span>\[\begin{split}\frac{ds_i}{dt} &amp;= \frac{\partial \mathcal{H}}{\partial \phi_i} = \phi_i \\
 \frac{d\phi_i}{dt} &amp;= - \frac{\partial \mathcal{H}}{\partial s_i}
-                 = - \frac{\partial E}{\partial s_i}</span></p>
-</div><p>As shown in <a class="reference internal" href="#neal93" id="id3"><span>[Neal93]</span></a>, the above transformation preserves volume and is
+                 = - \frac{\partial E}{\partial s_i}\end{split}\]</div>
+<p>As shown in <a class="reference internal" href="#neal93" id="id3"><span>[Neal93]</span></a>, the above transformation preserves volume and is
 reversible. The above dynamics can thus be used as transition operators of a
-Markov chain and will leave <span class="math">p(s,\phi)</span> invariant. That chain by itself
+Markov chain and will leave <span class="math notranslate nohighlight">\(p(s,\phi)\)</span> invariant. That chain by itself
 is not ergodic however, since simulating the dynamics maintains a fixed
-Hamiltonian <span class="math">\mathcal{H}(s,\phi)</span>.
+Hamiltonian <span class="math notranslate nohighlight">\(\mathcal{H}(s,\phi)\)</span>.
 HMC thus alternates hamiltonian dynamic steps, with Gibbs sampling of the
-velocity. Because <span class="math">p(s)</span> and <span class="math">p(\phi)</span> are independent, sampling
-<span class="math">\phi_{new} \sim p(\phi|s)</span> is trivial since <span class="math">p(\phi|s)=p(\phi)</span>,
-where <span class="math">p(\phi)</span> is often taken to be the uni-variate Gaussian.</p>
+velocity. Because <span class="math notranslate nohighlight">\(p(s)\)</span> and <span class="math notranslate nohighlight">\(p(\phi)\)</span> are independent, sampling
+<span class="math notranslate nohighlight">\(\phi_{new} \sim p(\phi|s)\)</span> is trivial since <span class="math notranslate nohighlight">\(p(\phi|s)=p(\phi)\)</span>,
+where <span class="math notranslate nohighlight">\(p(\phi)\)</span> is often taken to be the uni-variate Gaussian.</p>
 <p><strong>The Leap-Frog Algorithm</strong></p>
 <p>In practice, we cannot simulate Hamiltonian dynamics exactly because of the
 problem of time discretization. There are several ways one can do this. To
 maintain invariance of the Markov chain however, care must be taken to
 preserve the properties of volume conservation and time reversibility.  The
 <strong>leap-frog algorithm</strong> maintains these properties and operates in 3 steps:</p>
-<div class="math" id="equation-leap-frog">
-<p><span class="eqno">(2)<a class="headerlink" href="#equation-leap-frog" title="Permalink to this equation">¶</a></span><span class="math">\phi_i(t + \epsilon/2) &amp;= \phi_i(t) - \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t)) \\
+<div class="math notranslate nohighlight" id="equation-leap-frog">
+<span class="eqno">(2)<a class="headerlink" href="#equation-leap-frog" title="Permalink to this equation">¶</a></span>\[\begin{split}\phi_i(t + \epsilon/2) &amp;= \phi_i(t) - \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t)) \\
 s_i(t + \epsilon) &amp;= s_i(t) + \epsilon \phi_i(t + \epsilon/2) \\
-\phi_i(t + \epsilon) &amp;= \phi_i(t + \epsilon/2) - \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t + \epsilon)) \\</span></p>
-</div><p>We thus perform a half-step update of the velocity at time
-<span class="math">t+\epsilon/2</span>, which is then used to compute <span class="math">s(t + \epsilon)</span>
-and <span class="math">\phi(t + \epsilon)</span>.</p>
+\phi_i(t + \epsilon) &amp;= \phi_i(t + \epsilon/2) - \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t + \epsilon)) \\\end{split}\]</div>
+<p>We thus perform a half-step update of the velocity at time
+<span class="math notranslate nohighlight">\(t+\epsilon/2\)</span>, which is then used to compute <span class="math notranslate nohighlight">\(s(t + \epsilon)\)</span>
+and <span class="math notranslate nohighlight">\(\phi(t + \epsilon)\)</span>.</p>
 <p><strong>Accept / Reject</strong></p>
-<p>In practice, using finite stepsizes <span class="math">\epsilon</span> will not preserve
-<span class="math">\mathcal{H}(s,\phi)</span> exactly and will introduce bias in the simulation.
+<p>In practice, using finite stepsizes <span class="math notranslate nohighlight">\(\epsilon\)</span> will not preserve
+<span class="math notranslate nohighlight">\(\mathcal{H}(s,\phi)\)</span> exactly and will introduce bias in the simulation.
 Also, rounding errors due to the use of floating point numbers means that the
 above transformation will not be perfectly reversible.</p>
 <p>HMC cancels these effects <strong>exactly</strong> by adding a Metropolis accept/reject
-stage, after <span class="math">n</span> leapfrog steps. The new state <span class="math">\chi' = (s',\phi')</span> is
-accepted with probability <span class="math">p_{acc}(\chi,\chi')</span>, defined as:</p>
-<div class="math">
-<p><span class="math">p_{acc}(\chi,\chi') = min \left( 1, \frac{\exp(-\mathcal{H}(s',\phi')}{\exp(-\mathcal{H}(s,\phi)} \right)</span></p>
-</div><p><strong>HMC Algorithm</strong></p>
+stage, after <span class="math notranslate nohighlight">\(n\)</span> leapfrog steps. The new state <span class="math notranslate nohighlight">\(\chi' = (s',\phi')\)</span> is
+accepted with probability <span class="math notranslate nohighlight">\(p_{acc}(\chi,\chi')\)</span>, defined as:</p>
+<div class="math notranslate nohighlight">
+\[p_{acc}(\chi,\chi') = min \left( 1, \frac{\exp(-\mathcal{H}(s',\phi')}{\exp(-\mathcal{H}(s,\phi)} \right)\]</div>
+<p><strong>HMC Algorithm</strong></p>
 <p>In this tutorial, we obtain a new HMC sample as follows:</p>
 <ol class="arabic simple">
 <li><p>sample a new velocity from a univariate Gaussian distribution</p></li>
-<li><p>perform <span class="math">n</span> leapfrog steps to obtain the new state <span class="math">\chi'</span></p></li>
-<li><p>perform accept/reject move of <span class="math">\chi'</span></p></li>
+<li><p>perform <span class="math notranslate nohighlight">\(n\)</span> leapfrog steps to obtain the new state <span class="math notranslate nohighlight">\(\chi'\)</span></p></li>
+<li><p>perform accept/reject move of <span class="math notranslate nohighlight">\(\chi'\)</span></p></li>
 </ol>
 </section>
 <section id="implementing-hmc-using-theano">
@@ -147,24 +148,24 @@ represented as a Theano shared variable, with HMC updates being implemented by
 the updates list of a Theano function.</p>
 <p>We breakdown the HMC algorithm into the following sub-components:</p>
 <ul class="simple">
-<li><p><span class="math">simulate\_dynamics</span>: a symbolic Python function which, given an initial position and velocity, will perform <span class="math">n\_steps</span> leapfrog updates and return the symbolic variables for the proposed state <span class="math">\chi'</span>.</p></li>
-<li><p><span class="math">hmc\_move</span>: a symbolic Python function which given a starting position,
-generates <span class="math">\chi</span> by randomly sampling a velocity vector. It then
-calls <span class="math">simulate\_dynamics</span> and determines whether the transition <span class="math">\chi
-\rightarrow \chi'</span> is to be accepted.</p></li>
-<li><p><span class="math">hmc\_updates</span>: a Python function which, given the symbolic outputs of <span class="math">hmc\_move</span>,
+<li><p><span class="math notranslate nohighlight">\(simulate\_dynamics\)</span>: a symbolic Python function which, given an initial position and velocity, will perform <span class="math notranslate nohighlight">\(n\_steps\)</span> leapfrog updates and return the symbolic variables for the proposed state <span class="math notranslate nohighlight">\(\chi'\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(hmc\_move\)</span>: a symbolic Python function which given a starting position,
+generates <span class="math notranslate nohighlight">\(\chi\)</span> by randomly sampling a velocity vector. It then
+calls <span class="math notranslate nohighlight">\(simulate\_dynamics\)</span> and determines whether the transition <span class="math notranslate nohighlight">\(\chi
+\rightarrow \chi'\)</span> is to be accepted.</p></li>
+<li><p><span class="math notranslate nohighlight">\(hmc\_updates\)</span>: a Python function which, given the symbolic outputs of <span class="math notranslate nohighlight">\(hmc\_move\)</span>,
 generates the list of updates for a single iteration of HMC.</p></li>
-<li><p><span class="math">HMC\_sampler</span>: a Python helper class which wraps everything together.</p></li>
+<li><p><span class="math notranslate nohighlight">\(HMC\_sampler\)</span>: a Python helper class which wraps everything together.</p></li>
 </ul>
 <p><strong>simulate_dynamics</strong></p>
-<p>To perform <span class="math">n</span> leapfrog steps, we first need to define a function over
-which <span class="math">Scan</span> can iterate over. Instead of implementing Eq. <a class="reference internal" href="#equation-leap-frog">(2)</a>
-verbatim, notice that we can obtain <span class="math">s(t + n \epsilon)</span> and
-<span class="math">\phi(t + n \epsilon)</span> by performing an initial half-step update for
-<span class="math">\phi</span>, followed by <span class="math">n</span> full-step updates for <span class="math">s,\phi</span> and
-one last half-step update for <span class="math">\phi</span>. In loop form, this gives:</p>
-<div class="math" id="equation-leap-frog2">
-<p><span class="eqno">(3)<a class="headerlink" href="#equation-leap-frog2" title="Permalink to this equation">¶</a></span><span class="math">&amp; \phi_i(t + \epsilon/2) = \phi_i(t) -
+<p>To perform <span class="math notranslate nohighlight">\(n\)</span> leapfrog steps, we first need to define a function over
+which <span class="math notranslate nohighlight">\(Scan\)</span> can iterate over. Instead of implementing Eq. <a class="reference internal" href="#equation-leap-frog">(2)</a>
+verbatim, notice that we can obtain <span class="math notranslate nohighlight">\(s(t + n \epsilon)\)</span> and
+<span class="math notranslate nohighlight">\(\phi(t + n \epsilon)\)</span> by performing an initial half-step update for
+<span class="math notranslate nohighlight">\(\phi\)</span>, followed by <span class="math notranslate nohighlight">\(n\)</span> full-step updates for <span class="math notranslate nohighlight">\(s,\phi\)</span> and
+one last half-step update for <span class="math notranslate nohighlight">\(\phi\)</span>. In loop form, this gives:</p>
+<div class="math notranslate nohighlight" id="equation-leap-frog2">
+<span class="eqno">(3)<a class="headerlink" href="#equation-leap-frog2" title="Permalink to this equation">¶</a></span>\[\begin{split}&amp; \phi_i(t + \epsilon/2) = \phi_i(t) -
    \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t)) \\
 &amp; s_i(t + \epsilon) = s_i(t) + \epsilon \phi_i(t + \epsilon/2) \\
 &amp; \text{For } m \in [2,n]\text{, perform full updates: } \\
@@ -174,14 +175,14 @@ one last half-step update for <span class="math">\phi</span>. In loop form, this
 &amp; \qquad
   s_i(t + m\epsilon) = s_i(t) + \epsilon \phi_i(t + (m-1/2)\epsilon) \\
 &amp; \phi_i(t + n\epsilon) = \phi_i(t + (n-1/2)\epsilon) -
-     \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t + n\epsilon)) \\</span></p>
-</div><p>The inner-loop defined above is implemented by the following <span class="math">leapfrog</span>
-function, with <span class="math">pos</span>, <span class="math">vel</span> and <span class="math">step</span> replacing <span class="math">s,\phi</span> and <span class="math">\epsilon</span>
+     \frac{\epsilon}{2} \frac{\partial{}}{\partial s_i} E(s(t + n\epsilon)) \\\end{split}\]</div>
+<p>The inner-loop defined above is implemented by the following <span class="math notranslate nohighlight">\(leapfrog\)</span>
+function, with <span class="math notranslate nohighlight">\(pos\)</span>, <span class="math notranslate nohighlight">\(vel\)</span> and <span class="math notranslate nohighlight">\(step\)</span> replacing <span class="math notranslate nohighlight">\(s,\phi\)</span> and <span class="math notranslate nohighlight">\(\epsilon\)</span>
 respectively.</p>
-<p>The <span class="math">simulate\_dynamics</span> function performs the full algorithm of Eqs.
-<a class="reference internal" href="#equation-leap-frog2">(3)</a>. We start with the initial half-step update of <span class="math">\phi</span>
-and full-step of <span class="math">s</span>, and then scan over the <span class="math">leapfrog</span> method
-<span class="math">n\_steps-1</span> times.</p>
+<p>The <span class="math notranslate nohighlight">\(simulate\_dynamics\)</span> function performs the full algorithm of Eqs.
+<a class="reference internal" href="#equation-leap-frog2">(3)</a>. We start with the initial half-step update of <span class="math notranslate nohighlight">\(\phi\)</span>
+and full-step of <span class="math notranslate nohighlight">\(s\)</span>, and then scan over the <span class="math notranslate nohighlight">\(leapfrog\)</span> method
+<span class="math notranslate nohighlight">\(n\_steps-1\)</span> times.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">simulate_dynamics</span><span class="p">(</span><span class="n">initial_pos</span><span class="p">,</span> <span class="n">initial_vel</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">energy_fn</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return final (position, velocity) obtained after an `n_steps` leapfrog</span>
@@ -275,14 +276,14 @@ and full-step of <span class="math">s</span>, and then scan over the <span class
     <span class="k">return</span> <span class="n">final_pos</span><span class="p">,</span> <span class="n">final_vel</span>
 </pre></div>
 </div>
-<p>A final half-step is performed to compute <span class="math">\phi(t+n\epsilon)</span>, and the
-final proposed state <span class="math">\chi'</span> is returned.</p>
+<p>A final half-step is performed to compute <span class="math notranslate nohighlight">\(\phi(t+n\epsilon)\)</span>, and the
+final proposed state <span class="math notranslate nohighlight">\(\chi'\)</span> is returned.</p>
 <p><strong>hmc_move</strong></p>
-<p>The <span class="math">hmc\_move</span> function implements the remaining steps (steps 1 and 3) of an
-HMC move proposal (while wrapping the <span class="math">simulate\_dynamics</span> function). Given a
-matrix of initial states <span class="math">s \in \mathcal{R}^{N \times D}</span> (<span class="math">positions</span>) and
-energy function <span class="math">E(s)</span> (<span class="math">energy\_fn</span>), it defines the symbolic graph for
-computing <span class="math">n\_steps</span> of HMC, using a given <span class="math">stepsize</span>. The function prototype
+<p>The <span class="math notranslate nohighlight">\(hmc\_move\)</span> function implements the remaining steps (steps 1 and 3) of an
+HMC move proposal (while wrapping the <span class="math notranslate nohighlight">\(simulate\_dynamics\)</span> function). Given a
+matrix of initial states <span class="math notranslate nohighlight">\(s \in \mathcal{R}^{N \times D}\)</span> (<span class="math notranslate nohighlight">\(positions\)</span>) and
+energy function <span class="math notranslate nohighlight">\(E(s)\)</span> (<span class="math notranslate nohighlight">\(energy\_fn\)</span>), it defines the symbolic graph for
+computing <span class="math notranslate nohighlight">\(n\_steps\)</span> of HMC, using a given <span class="math notranslate nohighlight">\(stepsize\)</span>. The function prototype
 is as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hmc_move</span><span class="p">(</span><span class="n">s_rng</span><span class="p">,</span> <span class="n">positions</span><span class="p">,</span> <span class="n">energy_fn</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -318,13 +319,13 @@ is as follows:</p>
 </div>
 <p>We start by sampling random velocities, using the provided shared RandomStream
 object. Velocities are sampled independently for each dimension and for each
-particle under simulation, yielding a <span class="math">N \times D</span> matrix.</p>
+particle under simulation, yielding a <span class="math notranslate nohighlight">\(N \times D\)</span> matrix.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># sample random velocity</span>
     <span class="n">initial_vel</span> <span class="o">=</span> <span class="n">s_rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">positions</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Since we now have an initial position and velocity, we can now call the
-<span class="math">simulate\_dynamics</span> to obtain the proposal for the new state <span class="math">\chi'</span>.</p>
+<span class="math notranslate nohighlight">\(simulate\_dynamics\)</span> to obtain the proposal for the new state <span class="math notranslate nohighlight">\(\chi'\)</span>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># perform simulation of particles subject to Hamiltonian dynamics</span>
     <span class="n">final_pos</span><span class="p">,</span> <span class="n">final_vel</span> <span class="o">=</span> <span class="n">simulate_dynamics</span><span class="p">(</span>
         <span class="n">initial_pos</span><span class="o">=</span><span class="n">positions</span><span class="p">,</span>
@@ -344,7 +345,7 @@ particle under simulation, yielding a <span class="math">N \times D</span> matri
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>where <span class="math">metropolis\_hastings\_accept</span> and <span class="math">hamiltonian</span> are helper functions,
+<p>where <span class="math notranslate nohighlight">\(metropolis\_hastings\_accept\)</span> and <span class="math notranslate nohighlight">\(hamiltonian\)</span> are helper functions,
 defined as follows.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">metropolis_hastings_accept</span><span class="p">(</span><span class="n">energy_prev</span><span class="p">,</span> <span class="n">energy_next</span><span class="p">,</span> <span class="n">s_rng</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -414,14 +415,14 @@ defined as follows.</p>
     <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">vel</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><span class="math">hmc\_move</span> finally returns the tuple <span class="math">(accept, final\_pos)</span>. <span class="math">accept</span> is a
-symbolic boolean variable indicating whether or not the new state <span class="math">final\_pos</span>
+<p><span class="math notranslate nohighlight">\(hmc\_move\)</span> finally returns the tuple <span class="math notranslate nohighlight">\((accept, final\_pos)\)</span>. <span class="math notranslate nohighlight">\(accept\)</span> is a
+symbolic boolean variable indicating whether or not the new state <span class="math notranslate nohighlight">\(final\_pos\)</span>
 should be used or not.</p>
 <p><strong>hmc_updates</strong></p>
-<p>The purpose of <span class="math">hmc\_updates</span> is to generate the list of updates to
-perform, whenever our HMC sampling function is called. <span class="math">hmc\_updates</span> thus
-receives as parameters, a series of shared variables to update (<span class="math">positions</span>, <span class="math">stepsize</span> and
-<span class="math">avg\_acceptance\_rate</span>), and the parameters required to compute their new
+<p>The purpose of <span class="math notranslate nohighlight">\(hmc\_updates\)</span> is to generate the list of updates to
+perform, whenever our HMC sampling function is called. <span class="math notranslate nohighlight">\(hmc\_updates\)</span> thus
+receives as parameters, a series of shared variables to update (<span class="math notranslate nohighlight">\(positions\)</span>, <span class="math notranslate nohighlight">\(stepsize\)</span> and
+<span class="math notranslate nohighlight">\(avg\_acceptance\_rate\)</span>), and the parameters required to compute their new
 state.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hmc_updates</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="n">stepsize</span><span class="p">,</span> <span class="n">avg_acceptance_rate</span><span class="p">,</span> <span class="n">final_pos</span><span class="p">,</span> <span class="n">accept</span><span class="p">,</span>
                 <span class="n">target_acceptance_rate</span><span class="p">,</span> <span class="n">stepsize_inc</span><span class="p">,</span> <span class="n">stepsize_dec</span><span class="p">,</span>
@@ -478,19 +479,19 @@ state.</p>
     <span class="n">new_positions</span> <span class="o">=</span> <span class="n">TT</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">accept_matrix</span><span class="p">,</span> <span class="n">final_pos</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Using the above code, the dictionary <span class="math">{positions: new\_positions}</span> can be used
-to update the state of the sampler with either (1) the new state <span class="math">final\_pos</span>
-if <span class="math">accept</span> is True, or (2) the old state if <span class="math">accept</span> is False.  This
+<p>Using the above code, the dictionary <span class="math notranslate nohighlight">\({positions: new\_positions}\)</span> can be used
+to update the state of the sampler with either (1) the new state <span class="math notranslate nohighlight">\(final\_pos\)</span>
+if <span class="math notranslate nohighlight">\(accept\)</span> is True, or (2) the old state if <span class="math notranslate nohighlight">\(accept\)</span> is False.  This
 conditional assignment is performed by the <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/basic.html#tensor.switch">switch</a> op.</p>
-<p><span class="math">switch</span> expects as its first argument, a boolean mask with the same
-broadcastable dimensions as the second and third argument. Since <span class="math">accept</span> is
+<p><span class="math notranslate nohighlight">\(switch\)</span> expects as its first argument, a boolean mask with the same
+broadcastable dimensions as the second and third argument. Since <span class="math notranslate nohighlight">\(accept\)</span> is
 scalar-valued, we must first use <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/basic.html#tensor._tensor_py_operators.dimshuffle">dimshuffle</a> to transform it to a tensor with
-<span class="math">final\_pos.ndim</span> broadcastable dimensions (<span class="math">accept\_matrix</span>).</p>
-<p><span class="math">hmc\_updates</span> additionally implements an adaptive version of HMC, as
+<span class="math notranslate nohighlight">\(final\_pos.ndim\)</span> broadcastable dimensions (<span class="math notranslate nohighlight">\(accept\_matrix\)</span>).</p>
+<p><span class="math notranslate nohighlight">\(hmc\_updates\)</span> additionally implements an adaptive version of HMC, as
 implemented in the accompanying code to <a class="reference internal" href="references.html#ranzato10" id="id4"><span>[Ranzato10]</span></a>. We start by tracking the
 average acceptance rate of the HMC move proposals (across many simulations),
 using an exponential moving average with time constant
-<span class="math">1-avg\_acceptance\_slowness</span>.</p>
+<span class="math notranslate nohighlight">\(1-avg\_acceptance\_slowness\)</span>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># ACCEPT RATE UPDATES #</span>
     <span class="c1"># perform exponential moving average</span>
     <span class="n">mean_dtype</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scalar</span><span class="o">.</span><span class="n">upcast</span><span class="p">(</span><span class="n">accept</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">avg_acceptance_rate</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -499,12 +500,12 @@ using an exponential moving average with time constant
         <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">avg_acceptance_slowness</span><span class="p">)</span> <span class="o">*</span> <span class="n">accept</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">mean_dtype</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>If the average acceptance rate is larger than the <span class="math">target\_acceptance\_rate</span>, we
-increase the <span class="math">stepsize</span> by a factor of <span class="math">stepsize\_inc</span> in order to increase the
+<p>If the average acceptance rate is larger than the <span class="math notranslate nohighlight">\(target\_acceptance\_rate\)</span>, we
+increase the <span class="math notranslate nohighlight">\(stepsize\)</span> by a factor of <span class="math notranslate nohighlight">\(stepsize\_inc\)</span> in order to increase the
 mixing rate of our chain. If the average acceptance rate is too low however,
-<span class="math">stepsize</span> is decreased by a factor of <span class="math">stepsize\_dec</span>, yielding a more
-conservative mixing rate. The <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/basic.html#tensor.clip">clip</a> op allows us to maintain the <span class="math">stepsize</span>
-in the range [<span class="math">stepsize\_min</span>, <span class="math">stepsize\_max</span>].</p>
+<span class="math notranslate nohighlight">\(stepsize\)</span> is decreased by a factor of <span class="math notranslate nohighlight">\(stepsize\_dec\)</span>, yielding a more
+conservative mixing rate. The <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/basic.html#tensor.clip">clip</a> op allows us to maintain the <span class="math notranslate nohighlight">\(stepsize\)</span>
+in the range [<span class="math notranslate nohighlight">\(stepsize\_min\)</span>, <span class="math notranslate nohighlight">\(stepsize\_max\)</span>].</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="c1"># STEPSIZE UPDATES #</span>
     <span class="c1"># if acceptance rate is too low, our sampler is too &quot;noisy&quot; and we reduce</span>
     <span class="c1"># the stepsize. If it is too high, our sampler is too conservative, we can</span>
@@ -523,15 +524,15 @@ in the range [<span class="math">stepsize\_min</span>, <span class="math">stepsi
 </pre></div>
 </div>
 <p><strong>HMC_sampler</strong></p>
-<p>We finally tie everything together using the <span class="math">HMC\_Sampler</span> class. Its main
+<p>We finally tie everything together using the <span class="math notranslate nohighlight">\(HMC\_Sampler\)</span> class. Its main
 elements are:</p>
 <ul class="simple">
-<li><p><span class="math">new\_from\_shared\_positions</span>: a constructor method which allocates various
-shared variables and strings together the calls to <span class="math">hmc\_move</span> and
-<span class="math">hmc\_updates</span>. It also builds the theano function <span class="math">simulate</span>, whose sole
-purpose is to execute the updates generated by <span class="math">hmc\_updates</span>.</p></li>
-<li><p><span class="math">draw</span>: a convenience method which calls the Theano function <span class="math">simulate</span>
-and returns a copy of the contents of the shared variable <span class="math">self.positions</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(new\_from\_shared\_positions\)</span>: a constructor method which allocates various
+shared variables and strings together the calls to <span class="math notranslate nohighlight">\(hmc\_move\)</span> and
+<span class="math notranslate nohighlight">\(hmc\_updates\)</span>. It also builds the theano function <span class="math notranslate nohighlight">\(simulate\)</span>, whose sole
+purpose is to execute the updates generated by <span class="math notranslate nohighlight">\(hmc\_updates\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(draw\)</span>: a convenience method which calls the Theano function <span class="math notranslate nohighlight">\(simulate\)</span>
+and returns a copy of the contents of the shared variable <span class="math notranslate nohighlight">\(self.positions\)</span>.</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">HMC_sampler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -649,11 +650,11 @@ and returns a copy of the contents of the shared variable <span class="math">sel
 <section id="testing-our-sampler">
 <h2>Testing our Sampler<a class="headerlink" href="#testing-our-sampler" title="Permalink to this heading">¶</a></h2>
 <p>We test our implementation of HMC by sampling from a multi-variate Gaussian
-distribution. We start by generating a random mean vector <span class="math">mu</span> and covariance
-matrix <span class="math">cov</span>, which allows us to define the energy function of the
-corresponding Gaussian distribution: <span class="math">gaussian\_energy</span>.
-We then initialize the state of the sampler by allocating a <span class="math">position</span> shared
-variable. It is passed to the constructor of <span class="math">HMC\_sampler</span> along with our
+distribution. We start by generating a random mean vector <span class="math notranslate nohighlight">\(mu\)</span> and covariance
+matrix <span class="math notranslate nohighlight">\(cov\)</span>, which allows us to define the energy function of the
+corresponding Gaussian distribution: <span class="math notranslate nohighlight">\(gaussian\_energy\)</span>.
+We then initialize the state of the sampler by allocating a <span class="math notranslate nohighlight">\(position\)</span> shared
+variable. It is passed to the constructor of <span class="math notranslate nohighlight">\(HMC\_sampler\)</span> along with our
 target energy function.</p>
 <p>Following a burn-in period, we then generate a large number of samples and
 compare the empirical mean and covariance matrix to their true values.</p>
@@ -743,7 +744,7 @@ final<span class="w"> </span>acceptance_rate<span class="w"> </span><span class=
 <p>As can be seen above, the samples generated by our HMC sampler yield an
 empirical mean and covariance matrix, which are very close to the true
 underlying parameters. The adaptive algorithm also seemed to work well as the
-final acceptance rate is close to our target of <span class="math">0.9</span>.</p>
+final acceptance rate is close to our target of <span class="math notranslate nohighlight">\(0.9\)</span>.</p>
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>

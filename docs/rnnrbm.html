@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Miscellaneous" href="utilities.html" />
@@ -70,29 +71,29 @@ Alternative MIDI datasets are available <a class="reference external" href="http
 </div>
 <section id="the-rnn-rbm">
 <h2>The RNN-RBM<a class="headerlink" href="#the-rnn-rbm" title="Permalink to this heading">¶</a></h2>
-<p>The RNN-RBM is an energy-based model for density estimation of temporal sequences, where the feature vector <span class="math">v^{(t)}</span> at time step <span class="math">t</span> may be high-dimensional.
-It allows to describe multimodal conditional distributions of <span class="math">v^{(t)}|\mathcal A^{(t)}</span>, where <span class="math">\mathcal A^{(t)}\equiv \{v_\tau|\tau&lt;t\}</span> denotes the <em>sequence history</em> at time <span class="math">t</span>, via a series of conditional RBMs (one a each time step) whose parameters <span class="math">b_v^{(t)},b_h^{(t)}</span> depend on the output of a deterministic RNN with hidden units <span class="math">u^{(t)}</span>:</p>
-<div class="math" id="equation-bv-t">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-bv-t" title="Permalink to this equation">¶</a></span><span class="math">b_v^{(t)} = b_v + W_{uv} u^{(t-1)}</span></p>
-</div><div class="math" id="equation-bh-t">
-<p><span class="eqno">(2)<a class="headerlink" href="#equation-bh-t" title="Permalink to this equation">¶</a></span><span class="math">b_h^{(t)} = b_h + W_{uh} u^{(t-1)}</span></p>
-</div><p>and the single-layer RNN recurrence relation is defined by:</p>
-<div class="math" id="equation-u-t">
-<p><span class="eqno">(3)<a class="headerlink" href="#equation-u-t" title="Permalink to this equation">¶</a></span><span class="math">u^{(t)} = \tanh (b_u + W_{uu} u^{(t-1)} + W_{vu} v^{(t)})</span></p>
-</div><p>The resulting model is unrolled in time in the following figure:</p>
+<p>The RNN-RBM is an energy-based model for density estimation of temporal sequences, where the feature vector <span class="math notranslate nohighlight">\(v^{(t)}\)</span> at time step <span class="math notranslate nohighlight">\(t\)</span> may be high-dimensional.
+It allows to describe multimodal conditional distributions of <span class="math notranslate nohighlight">\(v^{(t)}|\mathcal A^{(t)}\)</span>, where <span class="math notranslate nohighlight">\(\mathcal A^{(t)}\equiv \{v_\tau|\tau&lt;t\}\)</span> denotes the <em>sequence history</em> at time <span class="math notranslate nohighlight">\(t\)</span>, via a series of conditional RBMs (one a each time step) whose parameters <span class="math notranslate nohighlight">\(b_v^{(t)},b_h^{(t)}\)</span> depend on the output of a deterministic RNN with hidden units <span class="math notranslate nohighlight">\(u^{(t)}\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-bv-t">
+<span class="eqno">(1)<a class="headerlink" href="#equation-bv-t" title="Permalink to this equation">¶</a></span>\[b_v^{(t)} = b_v + W_{uv} u^{(t-1)}\]</div>
+<div class="math notranslate nohighlight" id="equation-bh-t">
+<span class="eqno">(2)<a class="headerlink" href="#equation-bh-t" title="Permalink to this equation">¶</a></span>\[b_h^{(t)} = b_h + W_{uh} u^{(t-1)}\]</div>
+<p>and the single-layer RNN recurrence relation is defined by:</p>
+<div class="math notranslate nohighlight" id="equation-u-t">
+<span class="eqno">(3)<a class="headerlink" href="#equation-u-t" title="Permalink to this equation">¶</a></span>\[u^{(t)} = \tanh (b_u + W_{uu} u^{(t-1)} + W_{vu} v^{(t)})\]</div>
+<p>The resulting model is unrolled in time in the following figure:</p>
 <img alt="_images/rnnrbm.png" class="align-center" src="_images/rnnrbm.png" />
-<p>The overall probability distribution is given by the sum over the <span class="math">T</span> time steps in a given sequence:</p>
-<div class="math" id="equation-prob-rnnrbm">
-<p><span class="eqno">(4)<a class="headerlink" href="#equation-prob-rnnrbm" title="Permalink to this equation">¶</a></span><span class="math">P(\{v^{(t)}\}) = \sum_{t=1}^T P(v^{(t)} | \mathcal A^{(t)})</span></p>
-</div><p>where the right-hand side multiplicand is the marginalized probability of the <span class="math">t^\mathrm{th}</span> RBM.</p>
-<p>Note that for clarity of the implementation, contrarily to <a class="reference internal" href="references.html#boulangerlewandowski12" id="id2"><span>[BoulangerLewandowski12]</span></a>, we use the obvious naming convention for weight matrices and we use <span class="math">u^{(t)}</span> instead of <span class="math">\hat h^{(t)}</span> for the recurrent hidden units.</p>
+<p>The overall probability distribution is given by the sum over the <span class="math notranslate nohighlight">\(T\)</span> time steps in a given sequence:</p>
+<div class="math notranslate nohighlight" id="equation-prob-rnnrbm">
+<span class="eqno">(4)<a class="headerlink" href="#equation-prob-rnnrbm" title="Permalink to this equation">¶</a></span>\[P(\{v^{(t)}\}) = \sum_{t=1}^T P(v^{(t)} | \mathcal A^{(t)})\]</div>
+<p>where the right-hand side multiplicand is the marginalized probability of the <span class="math notranslate nohighlight">\(t^\mathrm{th}\)</span> RBM.</p>
+<p>Note that for clarity of the implementation, contrarily to <a class="reference internal" href="references.html#boulangerlewandowski12" id="id2"><span>[BoulangerLewandowski12]</span></a>, we use the obvious naming convention for weight matrices and we use <span class="math notranslate nohighlight">\(u^{(t)}\)</span> instead of <span class="math notranslate nohighlight">\(\hat h^{(t)}\)</span> for the recurrent hidden units.</p>
 </section>
 <section id="implementation">
 <h2>Implementation<a class="headerlink" href="#implementation" title="Permalink to this heading">¶</a></h2>
 <p>We wish to construct two Theano functions: one to train the RNN-RBM, and one to generate sample sequences from it.</p>
-<p>For <em>training</em>, i.e. given <span class="math">\{v^{(t)}\}</span>, the RNN hidden state <span class="math">\{u^{(t)}\}</span> and the associated <span class="math">\{b_v^{(t)}, b_h^{(t)}\}</span> parameters are deterministic and can be readily computed for each training sequence.
+<p>For <em>training</em>, i.e. given <span class="math notranslate nohighlight">\(\{v^{(t)}\}\)</span>, the RNN hidden state <span class="math notranslate nohighlight">\(\{u^{(t)}\}\)</span> and the associated <span class="math notranslate nohighlight">\(\{b_v^{(t)}, b_h^{(t)}\}\)</span> parameters are deterministic and can be readily computed for each training sequence.
 A stochastic gradient descent (SGD) update on the parameters can then be estimated via contrastive divergence (CD) on the individual time steps of a sequence in the same way that individual training examples are treated in a mini-batch for regular RBMs.</p>
-<p><em>Sequence generation</em> is similar except that the <span class="math">v^{(t)}</span> must be sampled sequentially at each time step with a separate (non-batch) Gibbs chain before being passed down to the recurrence and the sequence history.</p>
+<p><em>Sequence generation</em> is similar except that the <span class="math notranslate nohighlight">\(v^{(t)}\)</span> must be sampled sequentially at each time step with a separate (non-batch) Gibbs chain before being passed down to the recurrence and the sequence history.</p>
 <section id="the-rbm-layer">
 <h3>The RBM layer<a class="headerlink" href="#the-rbm-layer" title="Permalink to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">build_rbm</span></code> function shown below builds a Gibbs chain from an input mini-batch (a binary matrix) via the CD approximation.
@@ -151,7 +152,7 @@ Note that it also supports a single frame (a binary vector) in the non-batch cas
 </section>
 <section id="the-rnn-layer">
 <h3>The RNN layer<a class="headerlink" href="#the-rnn-layer" title="Permalink to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">build_rnnrbm</span></code> function defines the RNN recurrence relation to obtain the RBM parameters; the recurrence function is flexible enough to serve both in the training scenario where <span class="math">v^{(t)}</span> is given and the “batch” RBM is constructed at the end on the whole sequence at once, and in the generation scenario where <span class="math">v^{(t)}</span> is sampled separately at each time step using the Gibbs chain defined above.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">build_rnnrbm</span></code> function defines the RNN recurrence relation to obtain the RBM parameters; the recurrence function is flexible enough to serve both in the training scenario where <span class="math notranslate nohighlight">\(v^{(t)}\)</span> is given and the “batch” RBM is constructed at the end on the whole sequence at once, and in the generation scenario where <span class="math notranslate nohighlight">\(v^{(t)}\)</span> is sampled separately at each time step using the Gibbs chain defined above.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_rnnrbm</span><span class="p">(</span><span class="n">n_visible</span><span class="p">,</span> <span class="n">n_hidden</span><span class="p">,</span> <span class="n">n_hidden_recurrent</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;Construct a symbolic RNN-RBM and initialize parameters.</span>
 
@@ -403,10 +404,10 @@ Epoch 200/200 -4.72591935412
 <p>The code shown in this tutorial is a stripped-down version that can be improved in the following ways:</p>
 <ul class="simple">
 <li><p>Preprocessing: transposing the sequences in a common tonality (e.g. C major / minor) and normalizing the tempo in beats (quarternotes) per minute can have the most effect on the generative quality of the model.</p></li>
-<li><p>Pretraining techniques: initialize the <span class="math">W,b_v,b_h</span> parameters with independent RBMs with fully shuffled frames (i.e. <span class="math">W_{uh}=W_{uv}=W_{uu}=W_{vu}=0</span>); initialize the <span class="math">W_{uv},W_{uu},W_{vu},b_u</span> parameters of the RNN with the auxiliary cross-entropy objective via either SGD or, preferably, Hessian-free optimization <a class="reference internal" href="references.html#boulangerlewandowski12" id="id3"><span>[BoulangerLewandowski12]</span></a>.</p></li>
+<li><p>Pretraining techniques: initialize the <span class="math notranslate nohighlight">\(W,b_v,b_h\)</span> parameters with independent RBMs with fully shuffled frames (i.e. <span class="math notranslate nohighlight">\(W_{uh}=W_{uv}=W_{uu}=W_{vu}=0\)</span>); initialize the <span class="math notranslate nohighlight">\(W_{uv},W_{uu},W_{vu},b_u\)</span> parameters of the RNN with the auxiliary cross-entropy objective via either SGD or, preferably, Hessian-free optimization <a class="reference internal" href="references.html#boulangerlewandowski12" id="id3"><span>[BoulangerLewandowski12]</span></a>.</p></li>
 <li><p>Optimization techniques: gradient clipping, Nesterov momentum and the use of NADE for conditional density estimation.</p></li>
-<li><p>Hyperparameter search: learning rate (separately for the RBM and RNN parts), learning rate schedules, batch size, number of hidden units (recurrent and RBM), momentum coefficient, momentum schedule, Gibbs chain length <span class="math">k</span> and early stopping.</p></li>
-<li><p>Learn the initial condition <span class="math">u^{(0)}</span> as a model parameter.</p></li>
+<li><p>Hyperparameter search: learning rate (separately for the RBM and RNN parts), learning rate schedules, batch size, number of hidden units (recurrent and RBM), momentum coefficient, momentum schedule, Gibbs chain length <span class="math notranslate nohighlight">\(k\)</span> and early stopping.</p></li>
+<li><p>Learn the initial condition <span class="math notranslate nohighlight">\(u^{(0)}\)</span> as a model parameter.</p></li>
 </ul>
 <p>A few samples generated with code including these features are available here: <a class="reference external" href="http://www-etud.iro.umontreal.ca/~boulanni/sequences.zip">sequences.zip</a>.</p>
 </section>

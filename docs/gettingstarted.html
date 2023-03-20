@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Classifying MNIST digits using Logistic Regression" href="logreg.html" />
@@ -182,46 +183,46 @@ transfers between CPU memory and GPU memory.</p>
 <span id="index-3"></span><h2>Notation<a class="headerlink" href="#notation" title="Permalink to this heading">¶</a></h2>
 <section id="dataset-notation">
 <span id="index-4"></span><h3>Dataset notation<a class="headerlink" href="#dataset-notation" title="Permalink to this heading">¶</a></h3>
-<p>We label data sets as <span class="math">\mathcal{D}</span>. When the distinction is important, we
-indicate train, validation, and test sets as: <span class="math">\mathcal{D}_{train}</span>,
-<span class="math">\mathcal{D}_{valid}</span> and <span class="math">\mathcal{D}_{test}</span>. The validation set
+<p>We label data sets as <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>. When the distinction is important, we
+indicate train, validation, and test sets as: <span class="math notranslate nohighlight">\(\mathcal{D}_{train}\)</span>,
+<span class="math notranslate nohighlight">\(\mathcal{D}_{valid}\)</span> and <span class="math notranslate nohighlight">\(\mathcal{D}_{test}\)</span>. The validation set
 is used to perform model selection and hyper-parameter selection, whereas
 the test set is used to evaluate the final generalization error and
 compare different algorithms in an unbiased way.</p>
 <p>The tutorials mostly deal with classification problems, where each data set
-<span class="math">\mathcal{D}</span> is an indexed set of pairs <span class="math">(x^{(i)},y^{(i)})</span>. We
-use superscripts to distinguish training set examples: <span class="math">x^{(i)} \in
-\mathcal{R}^D</span> is thus the i-th training example of dimensionality <span class="math">D</span>. Similarly,
-<span class="math">y^{(i)} \in \{0, ..., L\}</span> is the i-th label assigned to input
-<span class="math">x^{(i)}</span>. It is straightforward to extend these examples to
-ones where <span class="math">y^{(i)}</span> has other types (e.g. Gaussian for regression,
+<span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is an indexed set of pairs <span class="math notranslate nohighlight">\((x^{(i)},y^{(i)})\)</span>. We
+use superscripts to distinguish training set examples: <span class="math notranslate nohighlight">\(x^{(i)} \in
+\mathcal{R}^D\)</span> is thus the i-th training example of dimensionality <span class="math notranslate nohighlight">\(D\)</span>. Similarly,
+<span class="math notranslate nohighlight">\(y^{(i)} \in \{0, ..., L\}\)</span> is the i-th label assigned to input
+<span class="math notranslate nohighlight">\(x^{(i)}\)</span>. It is straightforward to extend these examples to
+ones where <span class="math notranslate nohighlight">\(y^{(i)}\)</span> has other types (e.g. Gaussian for regression,
 or groups of multinomials for predicting multiple symbols).</p>
 </section>
 <section id="math-conventions">
 <span id="index-5"></span><h3>Math Conventions<a class="headerlink" href="#math-conventions" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><span class="math">W</span>: upper-case symbols refer to a matrix unless specified otherwise</p></li>
-<li><p><span class="math">W_{ij}</span>: element at i-th row and j-th column of matrix <span class="math">W</span></p></li>
-<li><p><span class="math">W_{i \cdot}, W_i</span>: vector, i-th row of matrix <span class="math">W</span></p></li>
-<li><p><span class="math">W_{\cdot j}</span>: vector, j-th column of matrix <span class="math">W</span></p></li>
-<li><p><span class="math">b</span>: lower-case symbols refer to a vector unless specified otherwise</p></li>
-<li><p><span class="math">b_i</span>: i-th element of vector <span class="math">b</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(W\)</span>: upper-case symbols refer to a matrix unless specified otherwise</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_{ij}\)</span>: element at i-th row and j-th column of matrix <span class="math notranslate nohighlight">\(W\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(W_{i \cdot}, W_i\)</span>: vector, i-th row of matrix <span class="math notranslate nohighlight">\(W\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(W_{\cdot j}\)</span>: vector, j-th column of matrix <span class="math notranslate nohighlight">\(W\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(b\)</span>: lower-case symbols refer to a vector unless specified otherwise</p></li>
+<li><p><span class="math notranslate nohighlight">\(b_i\)</span>: i-th element of vector <span class="math notranslate nohighlight">\(b\)</span></p></li>
 </ul>
 </section>
 <section id="list-of-symbols-and-acronyms">
 <span id="index-6"></span><h3>List of Symbols and acronyms<a class="headerlink" href="#list-of-symbols-and-acronyms" title="Permalink to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><span class="math">D</span>: number of input dimensions.</p></li>
-<li><p><span class="math">D_h^{(i)}</span>: number of hidden units in the <span class="math">i</span>-th layer.</p></li>
-<li><p><span class="math">f_{\theta}(x)</span>, <span class="math">f(x)</span>: classification function associated with a model <span class="math">P(Y|x,\theta)</span>, defined as <span class="math">{\rm argmax}_k P(Y=k|x,\theta)</span>.
-Note that we will often drop the <span class="math">\theta</span> subscript.</p></li>
+<li><p><span class="math notranslate nohighlight">\(D\)</span>: number of input dimensions.</p></li>
+<li><p><span class="math notranslate nohighlight">\(D_h^{(i)}\)</span>: number of hidden units in the <span class="math notranslate nohighlight">\(i\)</span>-th layer.</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_{\theta}(x)\)</span>, <span class="math notranslate nohighlight">\(f(x)\)</span>: classification function associated with a model <span class="math notranslate nohighlight">\(P(Y|x,\theta)\)</span>, defined as <span class="math notranslate nohighlight">\({\rm argmax}_k P(Y=k|x,\theta)\)</span>.
+Note that we will often drop the <span class="math notranslate nohighlight">\(\theta\)</span> subscript.</p></li>
 <li><p>L: number of labels.</p></li>
-<li><p><span class="math">\mathcal{L}(\theta, \cal{D})</span>: log-likelihood <span class="math">\cal{D}</span>
-of the model defined by parameters <span class="math">\theta</span>.</p></li>
-<li><p><span class="math">\ell(\theta, \cal{D})</span> empirical loss of the prediction function f
-parameterized by <span class="math">\theta</span> on data set <span class="math">\cal{D}</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{L}(\theta, \cal{D})\)</span>: log-likelihood <span class="math notranslate nohighlight">\(\cal{D}\)</span>
+of the model defined by parameters <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\ell(\theta, \cal{D})\)</span> empirical loss of the prediction function f
+parameterized by <span class="math notranslate nohighlight">\(\theta\)</span> on data set <span class="math notranslate nohighlight">\(\cal{D}\)</span>.</p></li>
 <li><p>NLL: negative log-likelihood</p></li>
-<li><p><span class="math">\theta</span>: set of all parameters for a given model</p></li>
+<li><p><span class="math notranslate nohighlight">\(\theta\)</span>: set of all parameters for a given model</p></li>
 </ul>
 </section>
 <section id="python-namespaces">
@@ -251,23 +252,23 @@ for more basics on the notion of optimizing a training criterion using the gradi
 <span id="index-8"></span><h4>Zero-One Loss<a class="headerlink" href="#zero-one-loss" title="Permalink to this heading">¶</a></h4>
 <p>The models presented in these deep learning tutorials are mostly used
 for classification. The objective in training a classifier is to minimize the number
-of errors (zero-one loss) on unseen examples. If <span class="math">f: R^D \rightarrow
-\{0,...,L\}</span> is the prediction function, then this loss can be written as:</p>
-<div class="math">
-<p><span class="math">\ell_{0,1} = \sum_{i=0}^{|\mathcal{D}|} I_{f(x^{(i)}) \neq y^{(i)}}</span></p>
-</div><p>where either <span class="math">\mathcal{D}</span> is the training
+of errors (zero-one loss) on unseen examples. If <span class="math notranslate nohighlight">\(f: R^D \rightarrow
+\{0,...,L\}\)</span> is the prediction function, then this loss can be written as:</p>
+<div class="math notranslate nohighlight">
+\[\ell_{0,1} = \sum_{i=0}^{|\mathcal{D}|} I_{f(x^{(i)}) \neq y^{(i)}}\]</div>
+<p>where either <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is the training
 set (during training)
-or <span class="math">\mathcal{D} \cap \mathcal{D}_{train} = \emptyset</span>
-(to avoid biasing the evaluation of validation or test error). <span class="math">I</span> is the
+or <span class="math notranslate nohighlight">\(\mathcal{D} \cap \mathcal{D}_{train} = \emptyset\)</span>
+(to avoid biasing the evaluation of validation or test error). <span class="math notranslate nohighlight">\(I\)</span> is the
 indicator function defined as:</p>
-<div class="math">
-<p><span class="math">I_x = \left\{\begin{array}{ccc}
+<div class="math notranslate nohighlight">
+\[\begin{split}I_x = \left\{\begin{array}{ccc}
       1&amp;\mbox{ if $x$ is True} \\
-      0&amp;\mbox{ otherwise}\end{array}\right.</span></p>
-</div><p>In this tutorial, <span class="math">f</span> is defined as:</p>
-<div class="math">
-<p><span class="math">f(x) = {\rm argmax}_k P(Y=k | x, \theta)</span></p>
-</div><p>In python, using Theano this can be written as:</p>
+      0&amp;\mbox{ otherwise}\end{array}\right.\end{split}\]</div>
+<p>In this tutorial, <span class="math notranslate nohighlight">\(f\)</span> is defined as:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = {\rm argmax}_k P(Y=k | x, \theta)\]</div>
+<p>In python, using Theano this can be written as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># zero_one_loss is a Theano variable representing a symbolic</span>
 <span class="c1"># expression of the zero one loss ; to get the actual value this</span>
 <span class="c1"># symbolic expression has to be compiled into a Theano function (see</span>
@@ -282,10 +283,10 @@ indicator function defined as:</p>
 (thousands or millions of parameters) is prohibitively expensive
 (computationally). We thus maximize the log-likelihood of our classifier given
 all the labels in a training set.</p>
-<div class="math">
-<p><span class="math">\mathcal{L}(\theta, \mathcal{D}) =
-    \sum_{i=0}^{|\mathcal{D}|} \log P(Y=y^{(i)} | x^{(i)}, \theta)</span></p>
-</div><p>The likelihood of the correct class is not the same as the
+<div class="math notranslate nohighlight">
+\[\mathcal{L}(\theta, \mathcal{D}) =
+    \sum_{i=0}^{|\mathcal{D}|} \log P(Y=y^{(i)} | x^{(i)}, \theta)\]</div>
+<p>The likelihood of the correct class is not the same as the
 number of right predictions, but from the point of view of a randomly
 initialized classifier they are pretty similar.
 Remember that likelihood and zero-one loss are different objectives;
@@ -294,9 +295,9 @@ sometimes one will rise while the other falls, or vice-versa.</p>
 <p>Since we usually speak in terms of minimizing a loss function, learning will
 thus attempt to <strong>minimize</strong> the <strong>negative</strong> log-likelihood (NLL), defined
 as:</p>
-<div class="math">
-<p><span class="math">NLL(\theta, \mathcal{D}) = - \sum_{i=0}^{|\mathcal{D}|} \log P(Y=y^{(i)} | x^{(i)}, \theta)</span></p>
-</div><p>The NLL of our classifier is a differentiable surrogate for the zero-one loss,
+<div class="math notranslate nohighlight">
+\[NLL(\theta, \mathcal{D}) = - \sum_{i=0}^{|\mathcal{D}|} \log P(Y=y^{(i)} | x^{(i)}, \theta)\]</div>
+<p>The NLL of our classifier is a differentiable surrogate for the zero-one loss,
 and we use the gradient of this function over our training data as a
 supervised learning signal for deep learning of a classifier.</p>
 <p>This can be computed using the following line of code:</p>
@@ -361,12 +362,12 @@ hierarchical memory organization in modern computers.</p>
         <span class="k">return</span> <span class="n">params</span>
 </pre></div>
 </div>
-<p>There is a tradeoff in the choice of the minibatch size <span class="math">B</span>.  The
+<p>There is a tradeoff in the choice of the minibatch size <span class="math notranslate nohighlight">\(B\)</span>.  The
 reduction of variance and use of SIMD instructions helps most when increasing
-<span class="math">B</span> from 1 to 2, but the marginal improvement fades rapidly to nothing.
-With large <span class="math">B</span>, time is wasted in reducing the variance of the gradient
+<span class="math notranslate nohighlight">\(B\)</span> from 1 to 2, but the marginal improvement fades rapidly to nothing.
+With large <span class="math notranslate nohighlight">\(B\)</span>, time is wasted in reducing the variance of the gradient
 estimator, that time would be better spent on additional gradient steps.
-An optimal <span class="math">B</span> is model-, dataset-, and hardware-dependent, and can be
+An optimal <span class="math notranslate nohighlight">\(B\)</span> is model-, dataset-, and hardware-dependent, and can be
 anywhere from 1 to maybe several hundreds.  In the tutorial we set it to 20,
 but this choice is almost arbitrary (though harmless).</p>
 <div class="admonition note">
@@ -414,27 +415,27 @@ here are L1/L2 regularization and early-stopping.</p>
 <span id="l1-l2-regularization"></span><span id="index-12"></span><h4>L1 and L2 regularization<a class="headerlink" href="#l1-and-l2-regularization" title="Permalink to this heading">¶</a></h4>
 <p>L1 and L2 regularization involve adding an extra term to the loss function,
 which penalizes certain parameter configurations. Formally, if our loss function is:</p>
-<div class="math">
-<p><span class="math">NLL(\theta, \mathcal{D}) = - \sum_{i=0}^{|\mathcal{D}|} \log P(Y=y^{(i)} | x^{(i)}, \theta)</span></p>
-</div><p>then the regularized loss will be:</p>
-<div class="math">
-<p><span class="math">E(\theta, \mathcal{D}) =  NLL(\theta, \mathcal{D}) + \lambda R(\theta)\\</span></p>
-</div><p>or, in our case</p>
-<div class="math">
-<p><span class="math">E(\theta, \mathcal{D}) =  NLL(\theta, \mathcal{D}) + \lambda||\theta||_p^p</span></p>
-</div><p>where</p>
-<div class="math">
-<p><span class="math">||\theta||_p = \left(\sum_{j=0}^{|\theta|}{|\theta_j|^p}\right)^{\frac{1}{p}}</span></p>
-</div><p>which is the <span class="math">L_p</span> norm of <span class="math">\theta</span>. <span class="math">\lambda</span> is a hyper-parameter which
+<div class="math notranslate nohighlight">
+\[NLL(\theta, \mathcal{D}) = - \sum_{i=0}^{|\mathcal{D}|} \log P(Y=y^{(i)} | x^{(i)}, \theta)\]</div>
+<p>then the regularized loss will be:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}E(\theta, \mathcal{D}) =  NLL(\theta, \mathcal{D}) + \lambda R(\theta)\\\end{split}\]</div>
+<p>or, in our case</p>
+<div class="math notranslate nohighlight">
+\[E(\theta, \mathcal{D}) =  NLL(\theta, \mathcal{D}) + \lambda||\theta||_p^p\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[||\theta||_p = \left(\sum_{j=0}^{|\theta|}{|\theta_j|^p}\right)^{\frac{1}{p}}\]</div>
+<p>which is the <span class="math notranslate nohighlight">\(L_p\)</span> norm of <span class="math notranslate nohighlight">\(\theta\)</span>. <span class="math notranslate nohighlight">\(\lambda\)</span> is a hyper-parameter which
 controls the relative importance of the regularization parameter. Commonly used values for p
 are 1 and 2, hence the L1/L2 nomenclature. If p=2, then the regularizer is
 also called “weight decay”.</p>
 <p>In principle, adding a regularization term to the loss will encourage smooth
 network mappings in a neural network (by penalizing large values of the
 parameters, which decreases the amount of nonlinearity that the
-network models). More intuitively, the two terms (NLL and <span class="math">R(\theta)</span>)
+network models). More intuitively, the two terms (NLL and <span class="math notranslate nohighlight">\(R(\theta)\)</span>)
 correspond to modelling the data well (NLL) and having “simple” or “smooth”
-solutions (<span class="math">R(\theta)</span>). Thus, minimizing the sum of both will, in
+solutions (<span class="math notranslate nohighlight">\(R(\theta)\)</span>). Thus, minimizing the sum of both will, in
 theory, correspond to finding the right trade-off between the fit to the
 training data and the “generality” of the solution that is found. To follow
 Occam’s razor principle, this minimization should find us the simplest
@@ -445,8 +446,8 @@ generalize well. Empirically, it was found that performing such regularization
 in the context of neural networks helps with generalization, especially
 on small datasets.
 The code block below shows how to compute the loss in python when it
-contains both a L1 regularization term weighted by <span class="math">\lambda_1</span> and
-L2 regularization term weighted by <span class="math">\lambda_2</span></p>
+contains both a L1 regularization term weighted by <span class="math notranslate nohighlight">\(\lambda_1\)</span> and
+L2 regularization term weighted by <span class="math notranslate nohighlight">\(\lambda_2\)</span></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># symbolic Theano variable that represents the L1 regularization term</span>
 <span class="n">L1</span>  <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">param</span><span class="p">))</span>
 
@@ -557,9 +558,9 @@ unseen examples.</p>
 <h3>Recap<a class="headerlink" href="#recap" title="Permalink to this heading">¶</a></h3>
 <p>That’s it for the optimization section.
 The technique of early-stopping requires us to partition the set of examples into three sets
-(training <span class="math">\mathcal{D}_{train}</span>,
-validation <span class="math">\mathcal{D}_{valid}</span>,
-test <span class="math">\mathcal{D}_{test}</span>).
+(training <span class="math notranslate nohighlight">\(\mathcal{D}_{train}\)</span>,
+validation <span class="math notranslate nohighlight">\(\mathcal{D}_{valid}\)</span>,
+test <span class="math notranslate nohighlight">\(\mathcal{D}_{test}\)</span>).
 The training set is used for minibatch stochastic gradient descent on the
 differentiable approximation of the objective function.
 As we perform this gradient descent, we periodically consult the validation set

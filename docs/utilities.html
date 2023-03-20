@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="References" href="references.html" />
@@ -63,7 +64,7 @@ Lucky for us this is just a call of the <code class="docutils literal notranslat
 <p>Plotting the weights is a bit more tricky. We have <code class="docutils literal notranslate"><span class="pre">n_hidden</span></code> hidden
 units, each of them corresponding to a column of the weight matrix. A
 column has the same shape as the visible, where the weight corresponding
-to the connection with visible unit <span class="math">j</span> is at position <span class="math">j</span>. Therefore,
+to the connection with visible unit <span class="math notranslate nohighlight">\(j\)</span> is at position <span class="math notranslate nohighlight">\(j\)</span>. Therefore,
 if we reshape every such column, using <code class="docutils literal notranslate"><span class="pre">numpy.reshape</span></code>, we get a
 filter image that tells us how this hidden unit is influenced by
 the input image.</p>

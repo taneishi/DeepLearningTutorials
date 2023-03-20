@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Stacked Denoising Autoencoders (SdA)" href="SdA.html" />
@@ -65,50 +66,50 @@ in <a class="reference internal" href="references.html#vincent08" id="id1"><span
 <section id="autoencoders">
 <span id="id2"></span><h2>Autoencoders<a class="headerlink" href="#autoencoders" title="Permalink to this heading">¶</a></h2>
 <p>See section 4.6 of <a class="reference internal" href="references.html#bengio09" id="id3"><span>[Bengio09]</span></a> for an overview of auto-encoders.
-An autoencoder takes an input <span class="math">\mathbf{x} \in [0,1]^d</span> and first
-maps it (with an <em>encoder)</em> to a hidden representation <span class="math">\mathbf{y} \in [0,1]^{d'}</span>
+An autoencoder takes an input <span class="math notranslate nohighlight">\(\mathbf{x} \in [0,1]^d\)</span> and first
+maps it (with an <em>encoder)</em> to a hidden representation <span class="math notranslate nohighlight">\(\mathbf{y} \in [0,1]^{d'}\)</span>
 through a deterministic mapping, e.g.:</p>
-<div class="math">
-<p><span class="math">\mathbf{y} = s(\mathbf{W}\mathbf{x} + \mathbf{b})</span></p>
-</div><p>Where <span class="math">s</span> is a non-linearity such as the sigmoid. The latent
-representation <span class="math">\mathbf{y}</span>, or <strong>code</strong> is then mapped back (with a
-<em>decoder)</em> into a <strong>reconstruction</strong> <span class="math">\mathbf{z}</span> of the same shape as
-<span class="math">\mathbf{x}</span>. The mapping happens through a similar transformation, e.g.:</p>
-<div class="math">
-<p><span class="math">\mathbf{z} = s(\mathbf{W'}\mathbf{y} + \mathbf{b'})</span></p>
-</div><p>(Here, the prime symbol does not indicate matrix transposition.)
-<span class="math">\mathbf{z}</span> should be seen as a prediction of <span class="math">\mathbf{x}</span>, given
-the code <span class="math">\mathbf{y}</span>. Optionally, the weight matrix <span class="math">\mathbf{W'}</span>
+<div class="math notranslate nohighlight">
+\[\mathbf{y} = s(\mathbf{W}\mathbf{x} + \mathbf{b})\]</div>
+<p>Where <span class="math notranslate nohighlight">\(s\)</span> is a non-linearity such as the sigmoid. The latent
+representation <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>, or <strong>code</strong> is then mapped back (with a
+<em>decoder)</em> into a <strong>reconstruction</strong> <span class="math notranslate nohighlight">\(\mathbf{z}\)</span> of the same shape as
+<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>. The mapping happens through a similar transformation, e.g.:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{z} = s(\mathbf{W'}\mathbf{y} + \mathbf{b'})\]</div>
+<p>(Here, the prime symbol does not indicate matrix transposition.)
+<span class="math notranslate nohighlight">\(\mathbf{z}\)</span> should be seen as a prediction of <span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, given
+the code <span class="math notranslate nohighlight">\(\mathbf{y}\)</span>. Optionally, the weight matrix <span class="math notranslate nohighlight">\(\mathbf{W'}\)</span>
 of the reverse mapping may be constrained to be the transpose of the forward
-mapping: <span class="math">\mathbf{W'} = \mathbf{W}^T</span>. This is referred to as <em>tied
-weights</em>. The parameters of this model (namely <span class="math">\mathbf{W}</span>,
-<span class="math">\mathbf{b}</span>, <span class="math">\mathbf{b'}</span> and, if one doesn’t use tied weights,
-also <span class="math">\mathbf{W'}</span>) are optimized such that the average reconstruction
+mapping: <span class="math notranslate nohighlight">\(\mathbf{W'} = \mathbf{W}^T\)</span>. This is referred to as <em>tied
+weights</em>. The parameters of this model (namely <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>,
+<span class="math notranslate nohighlight">\(\mathbf{b}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{b'}\)</span> and, if one doesn’t use tied weights,
+also <span class="math notranslate nohighlight">\(\mathbf{W'}\)</span>) are optimized such that the average reconstruction
 error is minimized.</p>
 <p>The reconstruction error can be measured in many ways, depending on the
 appropriate distributional assumptions on the input given the code. The
-traditional <em>squared error</em> <span class="math">L(\mathbf{x} \mathbf{z}) = || \mathbf{x} -
-\mathbf{z} ||^2</span>, can be used. If the input is interpreted as either bit
+traditional <em>squared error</em> <span class="math notranslate nohighlight">\(L(\mathbf{x} \mathbf{z}) = || \mathbf{x} -
+\mathbf{z} ||^2\)</span>, can be used. If the input is interpreted as either bit
 vectors or vectors of bit probabilities, <em>cross-entropy</em> of the reconstruction
 can be used:</p>
-<div class="math">
-<p><span class="math">L_{H} (\mathbf{x}, \mathbf{z}) = - \sum^d_{k=1}[\mathbf{x}_k \log
-        \mathbf{z}_k + (1 - \mathbf{x}_k)\log(1 - \mathbf{z}_k)]</span></p>
-</div><p>The hope is that the code <span class="math">\mathbf{y}</span> is a <em>distributed</em> representation
+<div class="math notranslate nohighlight">
+\[L_{H} (\mathbf{x}, \mathbf{z}) = - \sum^d_{k=1}[\mathbf{x}_k \log
+        \mathbf{z}_k + (1 - \mathbf{x}_k)\log(1 - \mathbf{z}_k)]\]</div>
+<p>The hope is that the code <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> is a <em>distributed</em> representation
 that captures the coordinates along the main factors of variation in the data.
 This is similar to the way the projection on principal components would capture
 the main factors of variation in the data. Indeed, if there is one linear
 hidden layer (the <em>code)</em> and the mean squared error criterion is used to train
-the network, then the <span class="math">k</span> hidden units learn to project the input in the
-span of the first <span class="math">k</span> principal components of the data. If the hidden
+the network, then the <span class="math notranslate nohighlight">\(k\)</span> hidden units learn to project the input in the
+span of the first <span class="math notranslate nohighlight">\(k\)</span> principal components of the data. If the hidden
 layer is non-linear, the auto-encoder behaves differently from PCA, with the
 ability to capture multi-modal aspects of the input distribution. The departure
 from PCA becomes even more important when we consider <em>stacking multiple
 encoders</em> (and their corresponding decoders) when building a deep auto-encoder
 <a class="reference internal" href="references.html#hinton06" id="id4"><span>[Hinton06]</span></a>.</p>
-<p>Because <span class="math">\mathbf{y}</span> is viewed as a lossy compression of
-<span class="math">\mathbf{x}</span>, it cannot be a good (small-loss) compression for all
-<span class="math">\mathbf{x}</span>. Optimization makes it a good compression for training
+<p>Because <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> is viewed as a lossy compression of
+<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>, it cannot be a good (small-loss) compression for all
+<span class="math notranslate nohighlight">\(\mathbf{x}\)</span>. Optimization makes it a good compression for training
 examples, and hopefully for other inputs as well, but not for arbitrary inputs.
 That is the sense in which an auto-encoder generalizes: it gives low
 reconstruction error on test examples from the same distribution as the
@@ -117,9 +118,9 @@ chosen from the input space.</p>
 <p>We want to implement an auto-encoder using Theano, in the form of a class, that
 could be afterwards used in constructing a stacked autoencoder. The first step
 is to create shared variables for the parameters of the autoencoder
-<span class="math">\mathbf{W}</span>, <span class="math">\mathbf{b}</span> and <span class="math">\mathbf{b'}</span>. (Since we are
-using tied weights in this tutorial, <span class="math">\mathbf{W}^T</span> will be used for
-<span class="math">\mathbf{W'}</span>):</p>
+<span class="math notranslate nohighlight">\(\mathbf{W}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{b}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{b'}\)</span>. (Since we are
+using tied weights in this tutorial, <span class="math notranslate nohighlight">\(\mathbf{W}^T\)</span> will be used for
+<span class="math notranslate nohighlight">\(\mathbf{W'}\)</span>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">numpy_rng</span><span class="p">,</span>
@@ -241,8 +242,8 @@ using tied weights in this tutorial, <span class="math">\mathbf{W}^T</span> will
 </div>
 <p>Note that we pass the symbolic <code class="docutils literal notranslate"><span class="pre">input</span></code> to the autoencoder as a parameter.
 This is so that we can concatenate layers of autoencoders to form a deep
-network: the symbolic output (the <span class="math">\mathbf{y}</span> above) of layer <span class="math">k</span> will
-be the symbolic input of layer <span class="math">k+1</span>.</p>
+network: the symbolic output (the <span class="math notranslate nohighlight">\(\mathbf{y}\)</span> above) of layer <span class="math notranslate nohighlight">\(k\)</span> will
+be the symbolic input of layer <span class="math notranslate nohighlight">\(k+1\)</span>.</p>
 <p>Now we can express the computation of the latent representation and of the reconstructed
 signal:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">get_hidden_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
@@ -294,8 +295,8 @@ one stochastic gradient descent step:</p>
 parameters <code class="docutils literal notranslate"><span class="pre">W</span></code>, <code class="docutils literal notranslate"><span class="pre">b</span></code> and <code class="docutils literal notranslate"><span class="pre">b_prime</span></code> such that the
 reconstruction cost is approximately minimized.</p>
 <p>If there is no constraint besides minimizing the reconstruction error, one
-might expect an auto-encoder with <span class="math">n</span> inputs and an encoding of dimension
-<span class="math">n</span> (or greater) to learn the identity function, merely mapping an input
+might expect an auto-encoder with <span class="math notranslate nohighlight">\(n\)</span> inputs and an encoding of dimension
+<span class="math notranslate nohighlight">\(n\)</span> (or greater) to learn the identity function, merely mapping an input
 to its copy. Such an autoencoder would not differentiate test examples (from
 the training distribution) from other input configurations.</p>
 <p>Surprisingly,

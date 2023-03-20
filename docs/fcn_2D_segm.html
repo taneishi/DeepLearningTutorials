@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Network for 1D segmentation" href="cnn_1D_segm.html" />
@@ -162,19 +163,19 @@ since it produces more precise segmentation maps.</p>
 <p><strong>Per pixel accuracy</strong></p>
 <p>This metric is self explanatory, since it outputs the class prediction accuracy
 per pixel.</p>
-<div class="math" id="equation-jaccard">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-jaccard" title="Permalink to this equation">¶</a></span><span class="math">acc(P, GT) = \frac{|\text{pixels correctly predicted}|}{|\text{total nb of pixels}|}</span></p>
-</div><p><strong>Jaccard (Intersection over Union)</strong></p>
+<div class="math notranslate nohighlight" id="equation-jaccard">
+<span class="eqno">(1)<a class="headerlink" href="#equation-jaccard" title="Permalink to this equation">¶</a></span>\[ acc(P, GT) = \frac{|\text{pixels correctly predicted}|}{|\text{total nb of pixels}|}\]</div>
+<p><strong>Jaccard (Intersection over Union)</strong></p>
 <p>This evaluation metric is often used for image segmentation, since it is more structured.
 The jaccard is a per class evaluation metric, which computes the number of pixels in
 the intersection between the
 predicted and ground truth segmentation maps for a given class, divided by the
 number of pixels in the union between those two segmentation maps,
 also for that given class.</p>
-<div class="math" id="equation-jaccard-equation">
-<p><span class="eqno">(2)<a class="headerlink" href="#equation-jaccard-equation" title="Permalink to this equation">¶</a></span><span class="math">jacc(P(class), GT(class)) = \frac{|P(class)\cap GT(class)|}{|P(class)\cup GT(class)|}</span></p>
-</div><p>where <span class="math">P</span> is the predicted segmentation map and <span class="math">GT</span> is the ground
-truth segmentation map. <span class="math">P(class)</span> is then the binary mask indicating if each
+<div class="math notranslate nohighlight" id="equation-jaccard-equation">
+<span class="eqno">(2)<a class="headerlink" href="#equation-jaccard-equation" title="Permalink to this equation">¶</a></span>\[ jacc(P(class), GT(class)) = \frac{|P(class)\cap GT(class)|}{|P(class)\cup GT(class)|}\]</div>
+<p>where <span class="math notranslate nohighlight">\(P\)</span> is the predicted segmentation map and <span class="math notranslate nohighlight">\(GT\)</span> is the ground
+truth segmentation map. <span class="math notranslate nohighlight">\(P(class)\)</span> is then the binary mask indicating if each
 pixel is predicted as <em>class</em> or not. In general, the closer to 1, the better.</p>
 <figure class="align-center" id="id5">
 <a class="reference internal image-reference" href="_images/jaccard.png"><img alt="_images/jaccard.png" src="_images/jaccard.png" style="width: 240.0px; height: 187.20000000000002px;" /></a>

@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Multilayer Perceptron" href="mlp.html" />
@@ -67,19 +68,19 @@ problem of MNIST digit classification.</p>
 <section id="the-model">
 <h2>The Model<a class="headerlink" href="#the-model" title="Permalink to this heading">¶</a></h2>
 <p>Logistic regression is a probabilistic, linear classifier. It is parametrized
-by a weight matrix <span class="math">W</span> and a bias vector <span class="math">b</span>. Classification is
+by a weight matrix <span class="math notranslate nohighlight">\(W\)</span> and a bias vector <span class="math notranslate nohighlight">\(b\)</span>. Classification is
 done by projecting an input vector onto a set of hyperplanes, each of which
 corresponds to a class. The distance from the input to a hyperplane reflects
 the probability that the input is a member of the corresponding class.</p>
-<p>Mathematically, the probability that an input vector <span class="math">x</span> is a member of a
-class <span class="math">i</span>, a value of a stochastic variable <span class="math">Y</span>, can be written as:</p>
-<div class="math">
-<p><span class="math">P(Y=i|x, W,b) &amp;= softmax_i(W x + b) \\
-              &amp;= \frac {e^{W_i x + b_i}} {\sum_j e^{W_j x + b_j}}</span></p>
-</div><p>The model’s prediction <span class="math">y_{pred}</span> is the class whose probability is maximal, specifically:</p>
-<div class="math">
-<p><span class="math">y_{pred} = {\rm argmax}_i P(Y=i|x,W,b)</span></p>
-</div><p>The code to do this in Theano is the following:</p>
+<p>Mathematically, the probability that an input vector <span class="math notranslate nohighlight">\(x\)</span> is a member of a
+class <span class="math notranslate nohighlight">\(i\)</span>, a value of a stochastic variable <span class="math notranslate nohighlight">\(Y\)</span>, can be written as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}P(Y=i|x, W,b) &amp;= softmax_i(W x + b) \\
+              &amp;= \frac {e^{W_i x + b_i}} {\sum_j e^{W_j x + b_j}}\end{split}\]</div>
+<p>The model’s prediction <span class="math notranslate nohighlight">\(y_{pred}\)</span> is the class whose probability is maximal, specifically:</p>
+<div class="math notranslate nohighlight">
+\[y_{pred} = {\rm argmax}_i P(Y=i|x,W,b)\]</div>
+<p>The code to do this in Theano is the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="c1"># initialize with 0 the weights W as a matrix of shape (n_in, n_out)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span>
             <span class="n">value</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
@@ -115,10 +116,10 @@ class <span class="math">i</span>, a value of a stochastic variable <span class=
 </pre></div>
 </div>
 <p>Since the parameters of the model must maintain a persistent state throughout
-training, we allocate shared variables for <span class="math">W,b</span>. This declares them both
+training, we allocate shared variables for <span class="math notranslate nohighlight">\(W,b\)</span>. This declares them both
 as being symbolic Theano variables, but also initializes their contents. The
-dot and softmax operators are then used to compute the vector <span class="math">P(Y|x,
-W,b)</span>. The result <code class="docutils literal notranslate"><span class="pre">p_y_given_x</span></code> is a symbolic variable of vector-type.</p>
+dot and softmax operators are then used to compute the vector <span class="math notranslate nohighlight">\(P(Y|x,
+W,b)\)</span>. The result <code class="docutils literal notranslate"><span class="pre">p_y_given_x</span></code> is a symbolic variable of vector-type.</p>
 <p>To get the actual model prediction, we can use the <code class="docutils literal notranslate"><span class="pre">T.argmax</span></code> operator, which
 will return the index at which <code class="docutils literal notranslate"><span class="pre">p_y_given_x</span></code> is maximal (i.e. the class with
 maximum probability).</p>
@@ -135,14 +136,14 @@ section will thus cover how to learn the optimal parameters.</p>
 <p>Learning optimal model parameters involves minimizing a loss function. In the
 case of multi-class logistic regression, it is very common to use the negative
 log-likelihood as the loss. This is equivalent to maximizing the likelihood of the
-data set <span class="math">\cal{D}</span> under the model parameterized by <span class="math">\theta</span>. Let
-us first start by defining the likelihood <span class="math">\cal{L}</span> and loss
-<span class="math">\ell</span>:</p>
-<div class="math">
-<p><span class="math">\mathcal{L} (\theta=\{W,b\}, \mathcal{D}) =
+data set <span class="math notranslate nohighlight">\(\cal{D}\)</span> under the model parameterized by <span class="math notranslate nohighlight">\(\theta\)</span>. Let
+us first start by defining the likelihood <span class="math notranslate nohighlight">\(\cal{L}\)</span> and loss
+<span class="math notranslate nohighlight">\(\ell\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathcal{L} (\theta=\{W,b\}, \mathcal{D}) =
   \sum_{i=0}^{|\mathcal{D}|} \log(P(Y=y^{(i)}|x^{(i)}, W,b)) \\
-\ell (\theta=\{W,b\}, \mathcal{D}) = - \mathcal{L} (\theta=\{W,b\}, \mathcal{D})</span></p>
-</div><p>While entire books are dedicated to the topic of minimization, gradient
+\ell (\theta=\{W,b\}, \mathcal{D}) = - \mathcal{L} (\theta=\{W,b\}, \mathcal{D})\end{split}\]</div>
+<p>While entire books are dedicated to the topic of minimization, gradient
 descent is by far the simplest method for minimizing arbitrary non-linear
 functions. This tutorial will use the method of stochastic gradient method with
 mini-batches (MSGD). See <a class="reference internal" href="gettingstarted.html#opt-sgd"><span class="std std-ref">Stochastic Gradient Descent</span></a> for more details.</p>
@@ -309,8 +310,8 @@ similar to what we have covered so far, and should be self explanatory.</p>
 
 </pre></div>
 </div>
-<p>We start by allocating symbolic variables for the training inputs <span class="math">x</span> and
-their corresponding classes <span class="math">y</span>. Note that <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are defined
+<p>We start by allocating symbolic variables for the training inputs <span class="math notranslate nohighlight">\(x\)</span> and
+their corresponding classes <span class="math notranslate nohighlight">\(y\)</span>. Note that <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are defined
 outside the scope of the <code class="docutils literal notranslate"><span class="pre">LogisticRegression</span></code> object. Since the class
 requires the input to build its graph, it is passed as a parameter of the
 <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function. This is useful in case you want to connect instances of
@@ -334,16 +335,16 @@ at initialization.</p>
 <h2>Learning the Model<a class="headerlink" href="#learning-the-model" title="Permalink to this heading">¶</a></h2>
 <p>To implement MSGD in most programming languages (C/C++, Matlab, Python), one
 would start by manually deriving the expressions for the gradient of the loss
-with respect to the parameters: in this case <span class="math">\partial{\ell}/\partial{W}</span>,
-and <span class="math">\partial{\ell}/\partial{b}</span>, This can get pretty tricky for complex
-models, as expressions for <span class="math">\partial{\ell}/\partial{\theta}</span> can get
+with respect to the parameters: in this case <span class="math notranslate nohighlight">\(\partial{\ell}/\partial{W}\)</span>,
+and <span class="math notranslate nohighlight">\(\partial{\ell}/\partial{b}\)</span>, This can get pretty tricky for complex
+models, as expressions for <span class="math notranslate nohighlight">\(\partial{\ell}/\partial{\theta}\)</span> can get
 fairly complex, especially when taking into account problems of numerical
 stability.</p>
 <p>With Theano, this work is greatly simplified. It performs
 automatic differentiation and applies certain math transforms to improve
 numerical stability.</p>
-<p>To get the gradients <span class="math">\partial{\ell}/\partial{W}</span> and
-<span class="math">\partial{\ell}/\partial{b}</span> in Theano, simply do the following:</p>
+<p>To get the gradients <span class="math notranslate nohighlight">\(\partial{\ell}/\partial{W}\)</span> and
+<span class="math notranslate nohighlight">\(\partial{\ell}/\partial{b}\)</span> in Theano, simply do the following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">g_W</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span> <span class="n">wrt</span><span class="o">=</span><span class="n">classifier</span><span class="o">.</span><span class="n">W</span><span class="p">)</span>
     <span class="n">g_b</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span> <span class="n">wrt</span><span class="o">=</span><span class="n">classifier</span><span class="o">.</span><span class="n">b</span><span class="p">)</span>
 
@@ -379,8 +380,8 @@ their replacements during the step. The function <code class="docutils literal n
 that:</p>
 <ul class="simple">
 <li><p>the input is the mini-batch index <code class="docutils literal notranslate"><span class="pre">index</span></code> that, together with the batch
-size (which is not an input since it is fixed) defines <span class="math">x</span> with
-corresponding labels <span class="math">y</span></p></li>
+size (which is not an input since it is fixed) defines <span class="math notranslate nohighlight">\(x\)</span> with
+corresponding labels <span class="math notranslate nohighlight">\(y\)</span></p></li>
 <li><p>the return value is the cost/loss associated with the x, y defined by
 the <code class="docutils literal notranslate"><span class="pre">index</span></code></p></li>
 <li><p>on every function call, it will first replace <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> with the slices

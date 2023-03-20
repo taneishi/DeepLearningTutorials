@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Modeling and generating sequences of polyphonic music with the RNN-RBM" href="rnnrbm.html" />
@@ -112,52 +113,52 @@ previous state, as needed.</p>
 </figcaption>
 </figure>
 <p>The equations below describe how a layer of memory cells is updated at every
-timestep <span class="math">t</span>. In these equations:</p>
+timestep <span class="math notranslate nohighlight">\(t\)</span>. In these equations:</p>
 <ul class="simple">
-<li><p><span class="math">x_t</span> is the input to the memory cell layer at time <span class="math">t</span></p></li>
-<li><p><span class="math">W_i</span>, <span class="math">W_f</span>, <span class="math">W_c</span>, <span class="math">W_o</span>, <span class="math">U_i</span>,
-<span class="math">U_f</span>, <span class="math">U_c</span>, <span class="math">U_o</span> and <span class="math">V_o</span> are weight
+<li><p><span class="math notranslate nohighlight">\(x_t\)</span> is the input to the memory cell layer at time <span class="math notranslate nohighlight">\(t\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(W_i\)</span>, <span class="math notranslate nohighlight">\(W_f\)</span>, <span class="math notranslate nohighlight">\(W_c\)</span>, <span class="math notranslate nohighlight">\(W_o\)</span>, <span class="math notranslate nohighlight">\(U_i\)</span>,
+<span class="math notranslate nohighlight">\(U_f\)</span>, <span class="math notranslate nohighlight">\(U_c\)</span>, <span class="math notranslate nohighlight">\(U_o\)</span> and <span class="math notranslate nohighlight">\(V_o\)</span> are weight
 matrices</p></li>
-<li><p><span class="math">b_i</span>, <span class="math">b_f</span>, <span class="math">b_c</span> and <span class="math">b_o</span> are bias vectors</p></li>
+<li><p><span class="math notranslate nohighlight">\(b_i\)</span>, <span class="math notranslate nohighlight">\(b_f\)</span>, <span class="math notranslate nohighlight">\(b_c\)</span> and <span class="math notranslate nohighlight">\(b_o\)</span> are bias vectors</p></li>
 </ul>
-<p>First, we compute the values for <span class="math">i_t</span>, the input gate, and
-<span class="math">\widetilde{C_t}</span> the candidate value for the states of the memory
-cells at time <span class="math">t</span>:</p>
-<div class="math" id="equation-1">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-1" title="Permalink to this equation">¶</a></span><span class="math">i_t = \sigma(W_i x_t + U_i h_{t-1} + b_i)</span></p>
-</div><div class="math" id="equation-2">
-<p><span class="eqno">(2)<a class="headerlink" href="#equation-2" title="Permalink to this equation">¶</a></span><span class="math">\widetilde{C_t} = tanh(W_c x_t + U_c h_{t-1} + b_c)</span></p>
-</div><p>Second, we compute the value for <span class="math">f_t</span>, the activation of the memory
-cells’ forget gates at time <span class="math">t</span>:</p>
-<div class="math" id="equation-3">
-<p><span class="eqno">(3)<a class="headerlink" href="#equation-3" title="Permalink to this equation">¶</a></span><span class="math">f_t = \sigma(W_f x_t + U_f h_{t-1} + b_f)</span></p>
-</div><p>Given the value of the input gate activation <span class="math">i_t</span>, the forget gate
-activation <span class="math">f_t</span> and the candidate state value <span class="math">\widetilde{C_t}</span>,
-we can compute <span class="math">C_t</span> the memory cells’ new state at time <span class="math">t</span>:</p>
-<div class="math" id="equation-4">
-<p><span class="eqno">(4)<a class="headerlink" href="#equation-4" title="Permalink to this equation">¶</a></span><span class="math">C_t = i_t * \widetilde{C_t} + f_t * C_{t-1}</span></p>
-</div><p>With the new state of the memory cells, we can compute the value of their
+<p>First, we compute the values for <span class="math notranslate nohighlight">\(i_t\)</span>, the input gate, and
+<span class="math notranslate nohighlight">\(\widetilde{C_t}\)</span> the candidate value for the states of the memory
+cells at time <span class="math notranslate nohighlight">\(t\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-1">
+<span class="eqno">(1)<a class="headerlink" href="#equation-1" title="Permalink to this equation">¶</a></span>\[i_t = \sigma(W_i x_t + U_i h_{t-1} + b_i)\]</div>
+<div class="math notranslate nohighlight" id="equation-2">
+<span class="eqno">(2)<a class="headerlink" href="#equation-2" title="Permalink to this equation">¶</a></span>\[\widetilde{C_t} = tanh(W_c x_t + U_c h_{t-1} + b_c)\]</div>
+<p>Second, we compute the value for <span class="math notranslate nohighlight">\(f_t\)</span>, the activation of the memory
+cells’ forget gates at time <span class="math notranslate nohighlight">\(t\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-3">
+<span class="eqno">(3)<a class="headerlink" href="#equation-3" title="Permalink to this equation">¶</a></span>\[f_t = \sigma(W_f x_t + U_f h_{t-1} + b_f)\]</div>
+<p>Given the value of the input gate activation <span class="math notranslate nohighlight">\(i_t\)</span>, the forget gate
+activation <span class="math notranslate nohighlight">\(f_t\)</span> and the candidate state value <span class="math notranslate nohighlight">\(\widetilde{C_t}\)</span>,
+we can compute <span class="math notranslate nohighlight">\(C_t\)</span> the memory cells’ new state at time <span class="math notranslate nohighlight">\(t\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-4">
+<span class="eqno">(4)<a class="headerlink" href="#equation-4" title="Permalink to this equation">¶</a></span>\[C_t = i_t * \widetilde{C_t} + f_t * C_{t-1}\]</div>
+<p>With the new state of the memory cells, we can compute the value of their
 output gates and, subsequently, their outputs:</p>
-<div class="math" id="equation-5">
-<p><span class="eqno">(5)<a class="headerlink" href="#equation-5" title="Permalink to this equation">¶</a></span><span class="math">o_t = \sigma(W_o x_t + U_o h_{t-1} + V_o C_t + b_o)</span></p>
-</div><div class="math" id="equation-6">
-<p><span class="eqno">(6)<a class="headerlink" href="#equation-6" title="Permalink to this equation">¶</a></span><span class="math">h_t = o_t * tanh(C_t)</span></p>
-</div></section>
+<div class="math notranslate nohighlight" id="equation-5">
+<span class="eqno">(5)<a class="headerlink" href="#equation-5" title="Permalink to this equation">¶</a></span>\[o_t = \sigma(W_o x_t + U_o h_{t-1} + V_o C_t + b_o)\]</div>
+<div class="math notranslate nohighlight" id="equation-6">
+<span class="eqno">(6)<a class="headerlink" href="#equation-6" title="Permalink to this equation">¶</a></span>\[h_t = o_t * tanh(C_t)\]</div>
+</section>
 <section id="our-model">
 <h3>Our model<a class="headerlink" href="#our-model" title="Permalink to this heading">¶</a></h3>
 <p>The model we used in this tutorial is a variation of the standard LSTM model.
 In this variant, the activation of a cell’s output gate does not depend on the
-memory cell’s state <span class="math">C_t</span>. This allows us to perform part of the
+memory cell’s state <span class="math notranslate nohighlight">\(C_t\)</span>. This allows us to perform part of the
 computation more efficiently (see the implementation note, below, for
 details). This means that, in the variant we have implemented, there is no
-matrix <span class="math">V_o</span> and equation <a class="reference internal" href="#equation-5">(5)</a> is replaced by equation <a class="reference internal" href="#equation-5-alt">(7)</a>:</p>
-<div class="math" id="equation-5-alt">
-<p><span class="eqno">(7)<a class="headerlink" href="#equation-5-alt" title="Permalink to this equation">¶</a></span><span class="math">o_t = \sigma(W_o x_t + U_o h_{t-1} + b_o)</span></p>
-</div><p>Our model is composed of a single LSTM layer followed by an average pooling
+matrix <span class="math notranslate nohighlight">\(V_o\)</span> and equation <a class="reference internal" href="#equation-5">(5)</a> is replaced by equation <a class="reference internal" href="#equation-5-alt">(7)</a>:</p>
+<div class="math notranslate nohighlight" id="equation-5-alt">
+<span class="eqno">(7)<a class="headerlink" href="#equation-5-alt" title="Permalink to this equation">¶</a></span>\[o_t = \sigma(W_o x_t + U_o h_{t-1} + b_o)\]</div>
+<p>Our model is composed of a single LSTM layer followed by an average pooling
 and a logistic regression layer as illustrated in Figure 2 below. Thus, from
-an input sequence <span class="math">x_0, x_1, x_2, ..., x_n</span>, the memory cells in the
-LSTM layer will produce a representation sequence <span class="math">h_0, h_1, h_2, ...,
-h_n</span>. This representation sequence is then averaged over all timesteps
+an input sequence <span class="math notranslate nohighlight">\(x_0, x_1, x_2, ..., x_n\)</span>, the memory cells in the
+LSTM layer will produce a representation sequence <span class="math notranslate nohighlight">\(h_0, h_1, h_2, ...,
+h_n\)</span>. This representation sequence is then averaged over all timesteps
 resulting in representation h. Finally, this representation is fed to a
 logistic regression layer whose target is the class label associated with the
 input sequence.</p>
@@ -173,15 +174,15 @@ logistic regression.</span><a class="headerlink" href="#id3" title="Permalink to
 <a class="reference internal" href="#equation-1">(1)</a>, <a class="reference internal" href="#equation-2">(2)</a>, <a class="reference internal" href="#equation-3">(3)</a> and <a class="reference internal" href="#equation-5-alt">(7)</a> are performed in parallel to make
 the computation more efficient. This is possible because none of these
 equations rely on a result produced by the other ones. It is achieved by
-concatenating the four matrices <span class="math">W_*</span> into a single weight matrix
-<span class="math">W</span> and performing the same concatenation on the weight matrices
-<span class="math">U_*</span> to produce the matrix <span class="math">U</span> and the bias vectors <span class="math">b_*</span>
-to produce the vector <span class="math">b</span>. Then, the pre-nonlinearity activations can
+concatenating the four matrices <span class="math notranslate nohighlight">\(W_*\)</span> into a single weight matrix
+<span class="math notranslate nohighlight">\(W\)</span> and performing the same concatenation on the weight matrices
+<span class="math notranslate nohighlight">\(U_*\)</span> to produce the matrix <span class="math notranslate nohighlight">\(U\)</span> and the bias vectors <span class="math notranslate nohighlight">\(b_*\)</span>
+to produce the vector <span class="math notranslate nohighlight">\(b\)</span>. Then, the pre-nonlinearity activations can
 be computed with:</p>
-<div class="math">
-<p><span class="math">z = W x_t + U h_{t-1} + b</span></p>
-</div><p>The result is then sliced to obtain the pre-nonlinearity activations for
-<span class="math">i</span>, <span class="math">f</span>, <span class="math">\widetilde{C_t}</span>, and <span class="math">o</span> and the
+<div class="math notranslate nohighlight">
+\[z = W x_t + U h_{t-1} + b\]</div>
+<p>The result is then sliced to obtain the pre-nonlinearity activations for
+<span class="math notranslate nohighlight">\(i\)</span>, <span class="math notranslate nohighlight">\(f\)</span>, <span class="math notranslate nohighlight">\(\widetilde{C_t}\)</span>, and <span class="math notranslate nohighlight">\(o\)</span> and the
 non-linearities are then applied independently for each.</p>
 </section>
 </section>

@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Convolutional Neural Networks (LeNet)" href="lenet.html" />
@@ -63,7 +64,7 @@ code on GPU also read <a class="reference external" href="http://deeplearning.ne
 <p>The next architecture we are going to present using Theano is the
 single-hidden-layer Multi-Layer Perceptron (MLP). An MLP can be viewed as a
 logistic regression classifier where the input is first transformed using a
-learnt non-linear transformation <span class="math">\Phi</span>. This transformation projects the
+learnt non-linear transformation <span class="math notranslate nohighlight">\(\Phi\)</span>. This transformation projects the
 input data into a space where it becomes linearly separable. This intermediate
 layer is referred to as a <strong>hidden layer</strong>. A single hidden layer is sufficient
 to make MLPs a <strong>universal approximator</strong>. However we will see later on that
@@ -79,34 +80,34 @@ follows:</p>
 <figure class="align-center">
 <img alt="_images/mlp.png" src="_images/mlp.png" />
 </figure>
-<p>Formally, a one-hidden-layer MLP is a function <span class="math">f: R^D \rightarrow
-R^L</span>, where <span class="math">D</span> is the size of input vector <span class="math">x</span> and <span class="math">L</span> is
-the size of the output vector <span class="math">f(x)</span>, such that, in matrix notation:</p>
-<div class="math">
-<p><span class="math">f(x) = G( b^{(2)} + W^{(2)}( s( b^{(1)} + W^{(1)} x))),</span></p>
-</div><p>with bias vectors <span class="math">b^{(1)}</span>, <span class="math">b^{(2)}</span>; weight matrices
-<span class="math">W^{(1)}</span>, <span class="math">W^{(2)}</span> and activation functions <span class="math">G</span> and <span class="math">s</span>.</p>
-<p>The vector <span class="math">h(x) = \Phi(x) = s(b^{(1)} + W^{(1)} x)</span> constitutes the hidden layer.
-<span class="math">W^{(1)} \in R^{D \times D_h}</span> is the weight matrix connecting the input vector
-to the hidden layer.  Each column <span class="math">W^{(1)}_{\cdot i}</span> represents the weights
-from the input units to the i-th hidden unit. Typical choices for <span class="math">s</span>
-include <span class="math">tanh</span>, with <span class="math">tanh(a)=(e^a-e^{-a})/(e^a+e^{-a})</span>,
-or the logistic <span class="math">sigmoid</span> function, with <span class="math">sigmoid(a)=1/(1+e^{-a})</span>. We will be using
-<span class="math">tanh</span> in this tutorial because it typically yields to faster training
-(and sometimes also to better local minima). Both the <span class="math">tanh</span>
-and <span class="math">sigmoid</span> are scalar-to-scalar functions but their natural
+<p>Formally, a one-hidden-layer MLP is a function <span class="math notranslate nohighlight">\(f: R^D \rightarrow
+R^L\)</span>, where <span class="math notranslate nohighlight">\(D\)</span> is the size of input vector <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(L\)</span> is
+the size of the output vector <span class="math notranslate nohighlight">\(f(x)\)</span>, such that, in matrix notation:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = G( b^{(2)} + W^{(2)}( s( b^{(1)} + W^{(1)} x))),\]</div>
+<p>with bias vectors <span class="math notranslate nohighlight">\(b^{(1)}\)</span>, <span class="math notranslate nohighlight">\(b^{(2)}\)</span>; weight matrices
+<span class="math notranslate nohighlight">\(W^{(1)}\)</span>, <span class="math notranslate nohighlight">\(W^{(2)}\)</span> and activation functions <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(s\)</span>.</p>
+<p>The vector <span class="math notranslate nohighlight">\(h(x) = \Phi(x) = s(b^{(1)} + W^{(1)} x)\)</span> constitutes the hidden layer.
+<span class="math notranslate nohighlight">\(W^{(1)} \in R^{D \times D_h}\)</span> is the weight matrix connecting the input vector
+to the hidden layer.  Each column <span class="math notranslate nohighlight">\(W^{(1)}_{\cdot i}\)</span> represents the weights
+from the input units to the i-th hidden unit. Typical choices for <span class="math notranslate nohighlight">\(s\)</span>
+include <span class="math notranslate nohighlight">\(tanh\)</span>, with <span class="math notranslate nohighlight">\(tanh(a)=(e^a-e^{-a})/(e^a+e^{-a})\)</span>,
+or the logistic <span class="math notranslate nohighlight">\(sigmoid\)</span> function, with <span class="math notranslate nohighlight">\(sigmoid(a)=1/(1+e^{-a})\)</span>. We will be using
+<span class="math notranslate nohighlight">\(tanh\)</span> in this tutorial because it typically yields to faster training
+(and sometimes also to better local minima). Both the <span class="math notranslate nohighlight">\(tanh\)</span>
+and <span class="math notranslate nohighlight">\(sigmoid\)</span> are scalar-to-scalar functions but their natural
 extension to vectors and tensors consists in applying them element-wise
 (e.g. separately on each element of the vector, yielding a same-size vector).</p>
-<p>The output vector is then obtained as: <span class="math">o(x) = G(b^{(2)} + W^{(2)} h(x))</span>.
+<p>The output vector is then obtained as: <span class="math notranslate nohighlight">\(o(x) = G(b^{(2)} + W^{(2)} h(x))\)</span>.
 The reader should recognize the form we already used for
 <a class="reference internal" href="logreg.html"><span class="doc">Classifying MNIST digits using Logistic Regression</span></a>. As before,
-class-membership probabilities can be obtained by choosing <span class="math">G</span> as the
-<span class="math">softmax</span> function (in the case of multi-class classification).</p>
+class-membership probabilities can be obtained by choosing <span class="math notranslate nohighlight">\(G\)</span> as the
+<span class="math notranslate nohighlight">\(softmax\)</span> function (in the case of multi-class classification).</p>
 <p>To train an MLP, we learn <strong>all</strong> parameters of the model, and here we use
 <a class="reference internal" href="gettingstarted.html#opt-sgd"><span class="std std-ref">Stochastic Gradient Descent</span></a> with minibatches.
-The set of parameters to learn is the set <span class="math">\theta =
-\{W^{(2)},b^{(2)},W^{(1)},b^{(1)}\}</span>.  Obtaining the gradients
-<span class="math">\partial{\ell}/\partial{\theta}</span> can be achieved through the
+The set of parameters to learn is the set <span class="math notranslate nohighlight">\(\theta =
+\{W^{(2)},b^{(2)},W^{(1)},b^{(1)}\}\)</span>.  Obtaining the gradients
+<span class="math notranslate nohighlight">\(\partial{\ell}/\partial{\theta}\)</span> can be achieved through the
 <strong>backpropagation algorithm</strong> (a special case of the chain-rule of derivation).
 Thankfully, since Theano performs automatic differentiation, we will not need to
 cover this in the tutorial!</p>
@@ -148,14 +149,14 @@ layer on top.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="nb">input</span>
 </pre></div>
 </div>
-<p>The initial values for the weights of a hidden layer <span class="math">i</span> should be uniformly
+<p>The initial values for the weights of a hidden layer <span class="math notranslate nohighlight">\(i\)</span> should be uniformly
 sampled from a symmetric interval that depends on the activation function. For
-<span class="math">tanh</span> activation function results obtained in <a class="reference internal" href="references.html#xavier10" id="id1"><span>[Xavier10]</span></a> show that the
+<span class="math notranslate nohighlight">\(tanh\)</span> activation function results obtained in <a class="reference internal" href="references.html#xavier10" id="id1"><span>[Xavier10]</span></a> show that the
 interval should be
-<span class="math">[-\sqrt{\frac{6}{fan_{in}+fan_{out}}},\sqrt{\frac{6}{fan_{in}+fan_{out}}}]</span>, where
-<span class="math">fan_{in}</span> is the number of units in the <span class="math">(i-1)</span>-th layer,
-and <span class="math">fan_{out}</span> is the number of units in the <span class="math">i</span>-th layer. For
-the sigmoid function the interval is <span class="math">[-4\sqrt{\frac{6}{fan_{in}+fan_{out}}},4\sqrt{\frac{6}{fan_{in}+fan_{out}}}]</span>.
+<span class="math notranslate nohighlight">\([-\sqrt{\frac{6}{fan_{in}+fan_{out}}},\sqrt{\frac{6}{fan_{in}+fan_{out}}}]\)</span>, where
+<span class="math notranslate nohighlight">\(fan_{in}\)</span> is the number of units in the <span class="math notranslate nohighlight">\((i-1)\)</span>-th layer,
+and <span class="math notranslate nohighlight">\(fan_{out}\)</span> is the number of units in the <span class="math notranslate nohighlight">\(i\)</span>-th layer. For
+the sigmoid function the interval is <span class="math notranslate nohighlight">\([-4\sqrt{\frac{6}{fan_{in}+fan_{out}}},4\sqrt{\frac{6}{fan_{in}+fan_{out}}}]\)</span>.
 This initialization ensures that, early in training, each neuron operates in a
 regime of its activation function where information can easily be propagated
 both upward (activations flowing from inputs to outputs) and backward
@@ -207,7 +208,7 @@ to use something else.</p>
 </pre></div>
 </div>
 <p>If you look into theory this class implements the graph that computes
-the hidden layer value <span class="math">h(x) = \Phi(x) = s(b^{(1)} + W^{(1)} x)</span>.
+the hidden layer value <span class="math notranslate nohighlight">\(h(x) = \Phi(x) = s(b^{(1)} + W^{(1)} x)\)</span>.
 If you give this graph as input to the <code class="docutils literal notranslate"><span class="pre">LogisticRegression</span></code> class,
 implemented in the previous tutorial <a class="reference internal" href="logreg.html"><span class="doc">Classifying MNIST digits using Logistic Regression</span></a>, you get the output
 of the MLP. You can see this in the following short implementation of
@@ -269,7 +270,7 @@ the <code class="docutils literal notranslate"><span class="pre">MLP</span></cod
 </div>
 <p>In this tutorial we will also use L1 and L2 regularization (see
 <a class="reference internal" href="gettingstarted.html#l1-l2-regularization"><span class="std std-ref">L1 and L2 regularization</span></a>). For this, we need to compute the L1 norm and the squared L2
-norm of the weights <span class="math">W^{(1)}, W^{(2)}</span>.</p>
+norm of the weights <span class="math notranslate nohighlight">\(W^{(1)}, W^{(2)}\)</span>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        <span class="c1"># L1 norm ; one regularization option is to enforce L1 norm to</span>
         <span class="c1"># be small</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">L1</span> <span class="o">=</span> <span class="p">(</span>
@@ -800,11 +801,11 @@ the same issues, with an emphasis on the parameters and techniques that we
 actually used in our code.</p>
 <section id="nonlinearity">
 <h3>Nonlinearity<a class="headerlink" href="#nonlinearity" title="Permalink to this heading">¶</a></h3>
-<p>Two of the most common ones are the <span class="math">sigmoid</span> and the <span class="math">tanh</span> function. For
+<p>Two of the most common ones are the <span class="math notranslate nohighlight">\(sigmoid\)</span> and the <span class="math notranslate nohighlight">\(tanh\)</span> function. For
 reasons explained in <a class="reference external" href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Section 4.4</a>, nonlinearities that
 are symmetric around the origin are preferred because they tend to produce
 zero-mean inputs to the next layer (which is a desirable property).
-Empirically, we have observed that the <span class="math">tanh</span> has better convergence
+Empirically, we have observed that the <span class="math notranslate nohighlight">\(tanh\)</span> has better convergence
 properties.</p>
 </section>
 <section id="weight-initialization">
@@ -816,24 +817,24 @@ are to conserve variance of the activation as well as variance of back-propagate
 This allows information to flow well upward and downward in the network and
 reduces discrepancies between layers.
 Under some assumptions, a compromise between these two constraints leads to the following
-initialization: <span class="math">uniform[-\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}},\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}}]</span>
-for tanh and <span class="math">uniform[-4*\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}},4*\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}}]</span>
-for sigmoid. Where <span class="math">fan_{in}</span> is the number of inputs and <span class="math">fan_{out}</span> the number of hidden units.
+initialization: <span class="math notranslate nohighlight">\(uniform[-\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}},\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}}]\)</span>
+for tanh and <span class="math notranslate nohighlight">\(uniform[-4*\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}},4*\frac{\sqrt{6}}{\sqrt{fan_{in}+fan_{out}}}]\)</span>
+for sigmoid. Where <span class="math notranslate nohighlight">\(fan_{in}\)</span> is the number of inputs and <span class="math notranslate nohighlight">\(fan_{out}\)</span> the number of hidden units.
 For mathematical considerations please refer to <a class="reference internal" href="references.html#xavier10" id="id2"><span>[Xavier10]</span></a>.</p>
 </section>
 <section id="learning-rate">
 <h3>Learning rate<a class="headerlink" href="#learning-rate" title="Permalink to this heading">¶</a></h3>
 <p>There is a great deal of literature on choosing a good learning rate. The
 simplest solution is to simply have a constant rate. Rule of thumb: try
-several log-spaced values (<span class="math">10^{-1},10^{-2},\ldots</span>) and narrow the
+several log-spaced values (<span class="math notranslate nohighlight">\(10^{-1},10^{-2},\ldots\)</span>) and narrow the
 (logarithmic) grid search to the region where you obtain the lowest
 validation error.</p>
 <p>Decreasing the learning rate over time is sometimes a good idea. One simple
-rule for doing that is <span class="math">\frac{\mu_0}{1 + d\times t}</span> where
-<span class="math">\mu_0</span> is the initial rate (chosen, perhaps, using the grid search
-technique explained above), <span class="math">d</span> is a so-called “decrease constant”
+rule for doing that is <span class="math notranslate nohighlight">\(\frac{\mu_0}{1 + d\times t}\)</span> where
+<span class="math notranslate nohighlight">\(\mu_0\)</span> is the initial rate (chosen, perhaps, using the grid search
+technique explained above), <span class="math notranslate nohighlight">\(d\)</span> is a so-called “decrease constant”
 which controls the rate at which the learning rate decreases (typically, a
-smaller positive number, <span class="math">10^{-3}</span> and smaller) and <span class="math">t</span> is the
+smaller positive number, <span class="math notranslate nohighlight">\(10^{-3}\)</span> and smaller) and <span class="math notranslate nohighlight">\(t\)</span> is the
 epoch/stage.</p>
 <p><a class="reference external" href="http://yann.lecun.com/exdb/publis/pdf/lecun-98b.pdf">Section 4.7</a> details
 procedures for choosing a learning rate for each parameter (weight) in our
@@ -846,15 +847,15 @@ classifier.</p>
 more complicated the input distribution is, the more capacity the network
 will require to model it, and so the larger the number of hidden units that
 will be needed (note that the number of weights in a layer, perhaps a more direct
-measure of capacity, is <span class="math">D\times D_h</span> (recall <span class="math">D</span> is the number of
-inputs and <span class="math">D_h</span> is the number of hidden units).</p>
+measure of capacity, is <span class="math notranslate nohighlight">\(D\times D_h\)</span> (recall <span class="math notranslate nohighlight">\(D\)</span> is the number of
+inputs and <span class="math notranslate nohighlight">\(D_h\)</span> is the number of hidden units).</p>
 <p>Unless we employ some regularization scheme (early stopping or L1/L2
 penalties), a typical number of hidden  units vs. generalization performance graph will be U-shaped.</p>
 </section>
 <section id="regularization-parameter">
 <h3>Regularization parameter<a class="headerlink" href="#regularization-parameter" title="Permalink to this heading">¶</a></h3>
-<p>Typical values to try for the L1/L2 regularization parameter <span class="math">\lambda</span>
-are <span class="math">10^{-2},10^{-3},\ldots</span>. In the framework that we described so
+<p>Typical values to try for the L1/L2 regularization parameter <span class="math notranslate nohighlight">\(\lambda\)</span>
+are <span class="math notranslate nohighlight">\(10^{-2},10^{-3},\ldots\)</span>. In the framework that we described so
 far, optimizing this parameter will not lead to significantly better
 solutions, but is worth exploring nonetheless.</p>
 </section>

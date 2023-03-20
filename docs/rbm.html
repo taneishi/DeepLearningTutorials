@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Deep Belief Networks" href="DBN.html" />
@@ -66,45 +67,45 @@ so that its shape has desirable properties. For example, we would like
 plausible or desirable configurations to have low energy.  Energy-based
 probabilistic models define a probability distribution through an energy
 function, as follows:</p>
-<div class="math" id="equation-energy1">
-<p><span class="eqno">(1)<a class="headerlink" href="#equation-energy1" title="Permalink to this equation">¶</a></span><span class="math">p(x) = \frac {e^{-E(x)}} {Z}.</span></p>
-</div><p>The normalizing factor <span class="math">Z</span> is called the <strong>partition function</strong> by analogy
+<div class="math notranslate nohighlight" id="equation-energy1">
+<span class="eqno">(1)<a class="headerlink" href="#equation-energy1" title="Permalink to this equation">¶</a></span>\[p(x) = \frac {e^{-E(x)}} {Z}.\]</div>
+<p>The normalizing factor <span class="math notranslate nohighlight">\(Z\)</span> is called the <strong>partition function</strong> by analogy
 with physical systems.</p>
-<div class="math">
-<p><span class="math">Z = \sum_x e^{-E(x)}</span></p>
-</div><p>An energy-based model can be learnt by performing (stochastic) gradient
+<div class="math notranslate nohighlight">
+\[Z = \sum_x e^{-E(x)}\]</div>
+<p>An energy-based model can be learnt by performing (stochastic) gradient
 descent on the empirical negative log-likelihood of the training data. As for
 the logistic regression we will first define the log-likelihood and then the
 loss function as being the negative log-likelihood.</p>
-<div class="math">
-<p><span class="math">\mathcal{L}(\theta, \mathcal{D}) = \frac{1}{N} \sum_{x^{(i)} \in
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathcal{L}(\theta, \mathcal{D}) = \frac{1}{N} \sum_{x^{(i)} \in
 \mathcal{D}} \log\ p(x^{(i)})\\
-\ell (\theta, \mathcal{D}) = - \mathcal{L} (\theta, \mathcal{D})</span></p>
-</div><p>using the stochastic gradient <span class="math">-\frac{\partial  \log p(x^{(i)})}{\partial
-\theta}</span>, where <span class="math">\theta</span> are the parameters of the model.</p>
+\ell (\theta, \mathcal{D}) = - \mathcal{L} (\theta, \mathcal{D})\end{split}\]</div>
+<p>using the stochastic gradient <span class="math notranslate nohighlight">\(-\frac{\partial  \log p(x^{(i)})}{\partial
+\theta}\)</span>, where <span class="math notranslate nohighlight">\(\theta\)</span> are the parameters of the model.</p>
 <p><strong>EBMs with Hidden Units</strong></p>
-<p>In many cases of interest, we do not observe the example <span class="math">x</span> fully, or we
+<p>In many cases of interest, we do not observe the example <span class="math notranslate nohighlight">\(x\)</span> fully, or we
 want to introduce some non-observed variables to increase the expressive power
-of the model. So we consider an observed part (still denoted <span class="math">x</span> here) and a
-<strong>hidden</strong> part <span class="math">h</span>. We can then write:</p>
-<div class="math" id="equation-energy2">
-<p><span class="eqno">(2)<a class="headerlink" href="#equation-energy2" title="Permalink to this equation">¶</a></span><span class="math">P(x) = \sum_h P(x,h) = \sum_h \frac{e^{-E(x,h)}}{Z}.</span></p>
-</div><p>In such cases, to map this formulation to one similar to Eq. <a class="reference internal" href="#equation-energy1">(1)</a>, we
+of the model. So we consider an observed part (still denoted <span class="math notranslate nohighlight">\(x\)</span> here) and a
+<strong>hidden</strong> part <span class="math notranslate nohighlight">\(h\)</span>. We can then write:</p>
+<div class="math notranslate nohighlight" id="equation-energy2">
+<span class="eqno">(2)<a class="headerlink" href="#equation-energy2" title="Permalink to this equation">¶</a></span>\[ P(x) = \sum_h P(x,h) = \sum_h \frac{e^{-E(x,h)}}{Z}.\]</div>
+<p>In such cases, to map this formulation to one similar to Eq. <a class="reference internal" href="#equation-energy1">(1)</a>, we
 introduce the notation (inspired from physics) of <strong>free energy</strong>, defined as
 follows:</p>
-<div class="math" id="equation-free-energy">
-<p><span class="eqno">(3)<a class="headerlink" href="#equation-free-energy" title="Permalink to this equation">¶</a></span><span class="math">\mathcal{F}(x) = - \log \sum_h e^{-E(x,h)}</span></p>
-</div><p>which allows us to write,</p>
-<div class="math">
-<p><span class="math">&amp;P(x) = \frac{e^{-\mathcal{F}(x)}}{Z} \text{ with } Z=\sum_x e^{-\mathcal{F}(x)}.</span></p>
-</div><p>The data negative log-likelihood gradient then has a particularly interesting
+<div class="math notranslate nohighlight" id="equation-free-energy">
+<span class="eqno">(3)<a class="headerlink" href="#equation-free-energy" title="Permalink to this equation">¶</a></span>\[ \mathcal{F}(x) = - \log \sum_h e^{-E(x,h)}\]</div>
+<p>which allows us to write,</p>
+<div class="math notranslate nohighlight">
+\[&amp;P(x) = \frac{e^{-\mathcal{F}(x)}}{Z} \text{ with } Z=\sum_x e^{-\mathcal{F}(x)}.\]</div>
+<p>The data negative log-likelihood gradient then has a particularly interesting
 form.</p>
-<div class="math" id="equation-free-energy-grad">
-<p><span class="eqno">(4)<a class="headerlink" href="#equation-free-energy-grad" title="Permalink to this equation">¶</a></span><span class="math">- \frac{\partial  \log p(x)}{\partial \theta}
+<div class="math notranslate nohighlight" id="equation-free-energy-grad">
+<span class="eqno">(4)<a class="headerlink" href="#equation-free-energy-grad" title="Permalink to this equation">¶</a></span>\[- \frac{\partial  \log p(x)}{\partial \theta}
  &amp;= \frac{\partial \mathcal{F}(x)}{\partial \theta} -
        \sum_{\tilde{x}} p(\tilde{x}) \
-           \frac{\partial \mathcal{F}(\tilde{x})}{\partial \theta}.</span></p>
-</div><p>Notice that the above gradient contains two terms, which are referred to as
+           \frac{\partial \mathcal{F}(\tilde{x})}{\partial \theta}.\]</div>
+<p>Notice that the above gradient contains two terms, which are referred to as
 the <strong>positive</strong> and <strong>negative phase</strong>. The terms positive and negative do
 not refer to the sign of each term in the equation, but rather reflect their
 effect on the probability density defined by the model. The first term
@@ -113,24 +114,24 @@ energy), while the second term decreases the probability of samples generated
 by the model.</p>
 <p>It is usually difficult to determine this gradient analytically, as it
 involves the computation of
-<span class="math">E_P [ \frac{\partial \mathcal{F}(x)} {\partial \theta} ]</span>. This is
+<span class="math notranslate nohighlight">\(E_P [ \frac{\partial \mathcal{F}(x)} {\partial \theta} ]\)</span>. This is
 nothing less than an expectation over all possible configurations of the input
-<span class="math">x</span> (under the distribution <span class="math">P</span> formed by the model) !</p>
+<span class="math notranslate nohighlight">\(x\)</span> (under the distribution <span class="math notranslate nohighlight">\(P\)</span> formed by the model) !</p>
 <p>The first step in making this computation tractable is to estimate the
 expectation using a fixed number of model samples. Samples used to estimate the
 negative phase gradient are referred to as <strong>negative particles</strong>, which are
-denoted as <span class="math">\mathcal{N}</span>. The gradient can then be written as:</p>
-<div class="math" id="equation-bm-grad">
-<p><span class="eqno">(5)<a class="headerlink" href="#equation-bm-grad" title="Permalink to this equation">¶</a></span><span class="math">- \frac{\partial \log p(x)}{\partial \theta}
+denoted as <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>. The gradient can then be written as:</p>
+<div class="math notranslate nohighlight" id="equation-bm-grad">
+<span class="eqno">(5)<a class="headerlink" href="#equation-bm-grad" title="Permalink to this equation">¶</a></span>\[- \frac{\partial \log p(x)}{\partial \theta}
  &amp;\approx
   \frac{\partial \mathcal{F}(x)}{\partial \theta} -
    \frac{1}{|\mathcal{N}|}\sum_{\tilde{x} \in \mathcal{N}} \
-   \frac{\partial \mathcal{F}(\tilde{x})}{\partial \theta}.</span></p>
-</div><p>where we would ideally like elements <span class="math">\tilde{x}</span> of <span class="math">\mathcal{N}</span> to be sampled
-according to <span class="math">P</span> (i.e. we are doing Monte-Carlo).
+   \frac{\partial \mathcal{F}(\tilde{x})}{\partial \theta}.\]</div>
+<p>where we would ideally like elements <span class="math notranslate nohighlight">\(\tilde{x}\)</span> of <span class="math notranslate nohighlight">\(\mathcal{N}\)</span> to be sampled
+according to <span class="math notranslate nohighlight">\(P\)</span> (i.e. we are doing Monte-Carlo).
 With the above formula, we almost have a pratical, stochastic algorithm for
 learning an EBM. The only missing ingredient is how to extract these negative
-particles <span class="math">\mathcal{N}</span>. While the statistical literature abounds with
+particles <span class="math notranslate nohighlight">\(\mathcal{N}\)</span>. While the statistical literature abounds with
 sampling methods, Markov Chain Monte Carlo methods are especially well suited
 for models such as the Restricted Boltzmann Machines (RBM), a specific type of
 EBM.</p>
@@ -148,97 +149,97 @@ Restricted Boltzmann Machines further restrict BMs to
 those without visible-visible and hidden-hidden connections.  A graphical
 depiction of an RBM is shown below.</p>
 <img alt="_images/rbm.png" class="align-center" src="_images/rbm.png" />
-<p>The energy function <span class="math">E(v,h)</span> of an RBM is defined as:</p>
-<div class="math" id="equation-rbm-energy">
-<p><span class="eqno">(6)<a class="headerlink" href="#equation-rbm-energy" title="Permalink to this equation">¶</a></span><span class="math">E(v,h) = - b'v - c'h - h'Wv</span></p>
-</div><p>where <span class="math">W</span> represents the weights connecting hidden and visible units and
-<span class="math">b</span>, <span class="math">c</span> are the offsets of the visible and hidden layers
+<p>The energy function <span class="math notranslate nohighlight">\(E(v,h)\)</span> of an RBM is defined as:</p>
+<div class="math notranslate nohighlight" id="equation-rbm-energy">
+<span class="eqno">(6)<a class="headerlink" href="#equation-rbm-energy" title="Permalink to this equation">¶</a></span>\[E(v,h) = - b'v - c'h - h'Wv\]</div>
+<p>where <span class="math notranslate nohighlight">\(W\)</span> represents the weights connecting hidden and visible units and
+<span class="math notranslate nohighlight">\(b\)</span>, <span class="math notranslate nohighlight">\(c\)</span> are the offsets of the visible and hidden layers
 respectively.</p>
 <p>This translates directly to the following free energy formula:</p>
-<div class="math">
-<p><span class="math">\mathcal{F}(v)= - b'v - \sum_i \log \sum_{h_i} e^{h_i (c_i + W_i v)}.</span></p>
-</div><p>Because of the specific structure of RBMs, visible and hidden units are
+<div class="math notranslate nohighlight">
+\[\mathcal{F}(v)= - b'v - \sum_i \log \sum_{h_i} e^{h_i (c_i + W_i v)}.\]</div>
+<p>Because of the specific structure of RBMs, visible and hidden units are
 conditionally independent given one-another. Using this property, we can
 write:</p>
-<div class="math">
-<p><span class="math">p(h|v) &amp;= \prod_i p(h_i|v) \\
-p(v|h) &amp;= \prod_j p(v_j|h).</span></p>
-</div><p><strong>RBMs with binary units</strong></p>
-<p>In the commonly studied case of using binary units (where <span class="math">v_j</span> and <span class="math">h_i \in
-\{0,1\}</span>), we obtain from Eq. <a class="reference internal" href="#equation-rbm-energy">(6)</a> and <a class="reference internal" href="#equation-energy2">(2)</a>, a probabilistic
+<div class="math notranslate nohighlight">
+\[\begin{split}p(h|v) &amp;= \prod_i p(h_i|v) \\
+p(v|h) &amp;= \prod_j p(v_j|h).\end{split}\]</div>
+<p><strong>RBMs with binary units</strong></p>
+<p>In the commonly studied case of using binary units (where <span class="math notranslate nohighlight">\(v_j\)</span> and <span class="math notranslate nohighlight">\(h_i \in
+\{0,1\}\)</span>), we obtain from Eq. <a class="reference internal" href="#equation-rbm-energy">(6)</a> and <a class="reference internal" href="#equation-energy2">(2)</a>, a probabilistic
 version of the usual neuron activation function:</p>
-<div class="math" id="equation-rbm-propup">
-<p><span class="eqno">(7)<a class="headerlink" href="#equation-rbm-propup" title="Permalink to this equation">¶</a></span><span class="math">P(h_i=1|v) = sigm(c_i + W_i v) \\</span></p>
-</div><div class="math" id="equation-rbm-propdown">
-<p><span class="eqno">(8)<a class="headerlink" href="#equation-rbm-propdown" title="Permalink to this equation">¶</a></span><span class="math">P(v_j=1|h) = sigm(b_j + W'_j h)</span></p>
-</div><p>The free energy of an RBM with binary units further simplifies to:</p>
-<div class="math" id="equation-rbm-free-energy">
-<p><span class="eqno">(9)<a class="headerlink" href="#equation-rbm-free-energy" title="Permalink to this equation">¶</a></span><span class="math">\mathcal{F}(v)= - b'v - \sum_i \log(1 + e^{(c_i + W_i v)}).</span></p>
-</div><p><strong>Update Equations with Binary Units</strong></p>
+<div class="math notranslate nohighlight" id="equation-rbm-propup">
+<span class="eqno">(7)<a class="headerlink" href="#equation-rbm-propup" title="Permalink to this equation">¶</a></span>\[\begin{split}P(h_i=1|v) = sigm(c_i + W_i v) \\\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-rbm-propdown">
+<span class="eqno">(8)<a class="headerlink" href="#equation-rbm-propdown" title="Permalink to this equation">¶</a></span>\[P(v_j=1|h) = sigm(b_j + W'_j h)\]</div>
+<p>The free energy of an RBM with binary units further simplifies to:</p>
+<div class="math notranslate nohighlight" id="equation-rbm-free-energy">
+<span class="eqno">(9)<a class="headerlink" href="#equation-rbm-free-energy" title="Permalink to this equation">¶</a></span>\[\mathcal{F}(v)= - b'v - \sum_i \log(1 + e^{(c_i + W_i v)}).\]</div>
+<p><strong>Update Equations with Binary Units</strong></p>
 <p>Combining Eqs. <a class="reference internal" href="#equation-bm-grad">(5)</a> with <a class="reference internal" href="#equation-rbm-free-energy">(9)</a>, we obtain the
 following log-likelihood gradients for an RBM with binary units:</p>
-<div class="math" id="equation-rbm-grad">
-<p><span class="eqno">(10)<a class="headerlink" href="#equation-rbm-grad" title="Permalink to this equation">¶</a></span><span class="math">- \frac{\partial{ \log p(v)}}{\partial W_{ij}} &amp;=
+<div class="math notranslate nohighlight" id="equation-rbm-grad">
+<span class="eqno">(10)<a class="headerlink" href="#equation-rbm-grad" title="Permalink to this equation">¶</a></span>\[\begin{split}- \frac{\partial{ \log p(v)}}{\partial W_{ij}} &amp;=
     E_v[p(h_i|v) \cdot v_j]
     - v^{(i)}_j \cdot sigm(W_i \cdot v^{(i)} + c_i) \\
 -\frac{\partial{ \log p(v)}}{\partial c_i} &amp;=
     E_v[p(h_i|v)] - sigm(W_i \cdot v^{(i)})  \\
 -\frac{\partial{ \log p(v)}}{\partial b_j} &amp;=
-    E_v[p(v_j|h)] - v^{(i)}_j</span></p>
-</div><p>For a more detailed derivation of these equations, we refer the reader to the
+    E_v[p(v_j|h)] - v^{(i)}_j\end{split}\]</div>
+<p>For a more detailed derivation of these equations, we refer the reader to the
 following <a class="reference external" href="http://www.iro.umontreal.ca/~lisa/twiki/bin/view.cgi/Public/DBNEquations">page</a>,
 or to section 5 of <a class="reference external" href="http://www.iro.umontreal.ca/%7Elisa/publications2/index.php/publications/show/239">Learning Deep Architectures for AI</a>. We will however not use these formulas, but rather get the gradient using Theano <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/examples.html#computing-gradients">T.grad</a>
 from equation <a class="reference internal" href="#equation-free-energy-grad">(4)</a>.</p>
 </section>
 <section id="sampling-in-an-rbm">
 <h2>Sampling in an RBM<a class="headerlink" href="#sampling-in-an-rbm" title="Permalink to this heading">¶</a></h2>
-<p>Samples of <span class="math">p(x)</span> can be obtained by running a Markov chain to
+<p>Samples of <span class="math notranslate nohighlight">\(p(x)\)</span> can be obtained by running a Markov chain to
 convergence, using Gibbs sampling as the transition operator.</p>
-<p>Gibbs sampling of the joint of N random variables <span class="math">S=(S_1, ... , S_N)</span>
+<p>Gibbs sampling of the joint of N random variables <span class="math notranslate nohighlight">\(S=(S_1, ... , S_N)\)</span>
 is done through a sequence of N sampling sub-steps of the form
-<span class="math">S_i \sim p(S_i | S_{-i})</span> where <span class="math">S_{-i}</span> contains the <span class="math">N-1</span>
-other random variables in <span class="math">S</span> excluding <span class="math">S_i</span>.</p>
-<p>For RBMs, <span class="math">S</span> consists of the set of visible and hidden units. However,
+<span class="math notranslate nohighlight">\(S_i \sim p(S_i | S_{-i})\)</span> where <span class="math notranslate nohighlight">\(S_{-i}\)</span> contains the <span class="math notranslate nohighlight">\(N-1\)</span>
+other random variables in <span class="math notranslate nohighlight">\(S\)</span> excluding <span class="math notranslate nohighlight">\(S_i\)</span>.</p>
+<p>For RBMs, <span class="math notranslate nohighlight">\(S\)</span> consists of the set of visible and hidden units. However,
 since they are conditionally independent, one can perform block Gibbs
 sampling. In this setting, visible units are sampled simultaneously given
 fixed values of the hidden units. Similarly, hidden units are sampled
 simultaneously given the visibles. A step in the Markov chain is thus taken as
 follows:</p>
-<div class="math">
-<p><span class="math">h^{(n+1)} &amp;\sim sigm(W'v^{(n)} + c) \\
-v^{(n+1)} &amp;\sim sigm(W h^{(n+1)} + b),</span></p>
-</div><p>where <span class="math">h^{(n)}</span> refers to the set of all hidden units at the n-th step of
-the Markov chain. What it means is that, for example, <span class="math">h^{(n+1)}_i</span> is
-randomly chosen to be 1 (versus 0) with probability <span class="math">sigm(W_i'v^{(n)} + c_i)</span>,
+<div class="math notranslate nohighlight">
+\[\begin{split}h^{(n+1)} &amp;\sim sigm(W'v^{(n)} + c) \\
+v^{(n+1)} &amp;\sim sigm(W h^{(n+1)} + b),\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(h^{(n)}\)</span> refers to the set of all hidden units at the n-th step of
+the Markov chain. What it means is that, for example, <span class="math notranslate nohighlight">\(h^{(n+1)}_i\)</span> is
+randomly chosen to be 1 (versus 0) with probability <span class="math notranslate nohighlight">\(sigm(W_i'v^{(n)} + c_i)\)</span>,
 and similarly,
-<span class="math">v^{(n+1)}_j</span> is
-randomly chosen to be 1 (versus 0) with probability <span class="math">sigm(W_{.j} h^{(n+1)} + b_j)</span>.</p>
+<span class="math notranslate nohighlight">\(v^{(n+1)}_j\)</span> is
+randomly chosen to be 1 (versus 0) with probability <span class="math notranslate nohighlight">\(sigm(W_{.j} h^{(n+1)} + b_j)\)</span>.</p>
 <p>This can be illustrated graphically:</p>
 <img alt="_images/markov_chain.png" class="align-center" src="_images/markov_chain.png" />
-<p>As <span class="math">t \rightarrow \infty</span>, samples <span class="math">(v^{(t)}, h^{(t)})</span> are
-guaranteed to be accurate samples of <span class="math">p(v,h)</span>.</p>
+<p>As <span class="math notranslate nohighlight">\(t \rightarrow \infty\)</span>, samples <span class="math notranslate nohighlight">\((v^{(t)}, h^{(t)})\)</span> are
+guaranteed to be accurate samples of <span class="math notranslate nohighlight">\(p(v,h)\)</span>.</p>
 <p>In theory, each parameter update in the learning process would require running
 one such chain to convergence. It is needless to say that doing so would be
 prohibitively expensive. As such, several algorithms have been devised for
-RBMs, in order to efficiently sample from <span class="math">p(v,h)</span> during the learning
+RBMs, in order to efficiently sample from <span class="math notranslate nohighlight">\(p(v,h)\)</span> during the learning
 process.</p>
 <section id="contrastive-divergence-cd-k">
 <h3>Contrastive Divergence (CD-k)<a class="headerlink" href="#contrastive-divergence-cd-k" title="Permalink to this heading">¶</a></h3>
 <p>Contrastive Divergence uses two tricks to speed up the sampling process:</p>
 <ul class="simple">
-<li><p>since we eventually want <span class="math">p(v) \approx p_{train}(v)</span> (the true, underlying
+<li><p>since we eventually want <span class="math notranslate nohighlight">\(p(v) \approx p_{train}(v)\)</span> (the true, underlying
 distribution of the data), we initialize the Markov chain with a training
-example (i.e., from a distribution that is expected to be close to <span class="math">p</span>,
-so that the chain will be already close to having converged to its final distribution <span class="math">p</span>).</p></li>
+example (i.e., from a distribution that is expected to be close to <span class="math notranslate nohighlight">\(p\)</span>,
+so that the chain will be already close to having converged to its final distribution <span class="math notranslate nohighlight">\(p\)</span>).</p></li>
 <li><p>CD does not wait for the chain to converge. Samples are obtained after only
-k-steps of Gibbs sampling. In pratice, <span class="math">k=1</span> has been shown to work
+k-steps of Gibbs sampling. In pratice, <span class="math notranslate nohighlight">\(k=1\)</span> has been shown to work
 surprisingly well.</p></li>
 </ul>
 </section>
 <section id="persistent-cd">
 <h3>Persistent CD<a class="headerlink" href="#persistent-cd" title="Permalink to this heading">¶</a></h3>
 <p>Persistent CD <a class="reference internal" href="references.html#tieleman08" id="id2"><span>[Tieleman08]</span></a> uses another approximation for sampling from
-<span class="math">p(v,h)</span>.  It relies on a single Markov chain, which has a persistent
+<span class="math notranslate nohighlight">\(p(v,h)\)</span>.  It relies on a single Markov chain, which has a persistent
 state (i.e., not restarting a chain for each observed example). For each
 parameter update, we extract new samples by simply running the chain for
 k-steps. The state of the chain is then preserved for subsequent updates.</p>
@@ -587,14 +588,14 @@ containing the state of the Gibbs chain.</p>
 <section id="tracking-progress">
 <h3>Tracking Progress<a class="headerlink" href="#tracking-progress" title="Permalink to this heading">¶</a></h3>
 <p>RBMs are particularly tricky to train. Because of the partition function
-<span class="math">Z</span> of Eq. <a class="reference internal" href="#equation-energy1">(1)</a>, we cannot estimate the log-likelihood
-<span class="math">\log(P(x))</span> during training. We therefore have no direct useful metric
+<span class="math notranslate nohighlight">\(Z\)</span> of Eq. <a class="reference internal" href="#equation-energy1">(1)</a>, we cannot estimate the log-likelihood
+<span class="math notranslate nohighlight">\(\log(P(x))\)</span> during training. We therefore have no direct useful metric
 for choosing the optimal hyperparameters.</p>
 <p>Several options are available to the user.</p>
 <p><strong>Inspection of Negative Samples</strong></p>
 <p>Negative samples obtained during training can be visualized. As training
 progresses, we know that the model defined by the RBM becomes closer to the
-true underlying distribution, <span class="math">p_{train}(x)</span>. Negative samples should thus
+true underlying distribution, <span class="math notranslate nohighlight">\(p_{train}(x)\)</span>. Negative samples should thus
 look like samples from the training set. Obviously bad hyperparameters can be
 discarded in this fashion.</p>
 <p><strong>Visual Inspection of Filters</strong></p>
@@ -610,31 +611,31 @@ conjunction with a sparsity criteria.</p>
 training an RBM with PCD, one can use pseudo-likelihood as the proxy.
 Pseudo-likelihood (PL) is much less expensive to compute, as it assumes that
 all bits are independent. Therefore,</p>
-<div class="math">
-<p><span class="math">PL(x) = \prod_i P(x_i | x_{-i}) \text{ and }\\
-\log PL(x) = \sum_i \log P(x_i | x_{-i})</span></p>
-</div><p>Here <span class="math">x_{-i}</span> denotes the set of all bits of <span class="math">x</span> except bit
-<span class="math">i</span>. The log-PL is therefore the sum of the log-probabilities of each
-bit <span class="math">x_i</span>, conditioned on the state of all other bits. For MNIST, this
+<div class="math notranslate nohighlight">
+\[\begin{split}PL(x) = \prod_i P(x_i | x_{-i}) \text{ and }\\
+\log PL(x) = \sum_i \log P(x_i | x_{-i})\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(x_{-i}\)</span> denotes the set of all bits of <span class="math notranslate nohighlight">\(x\)</span> except bit
+<span class="math notranslate nohighlight">\(i\)</span>. The log-PL is therefore the sum of the log-probabilities of each
+bit <span class="math notranslate nohighlight">\(x_i\)</span>, conditioned on the state of all other bits. For MNIST, this
 would involve summing over the 784 input dimensions, which remains rather
 expensive. For this reason, we use the following stochastic approximation to
 log-PL:</p>
-<div class="math">
-<p><span class="math">g = N \cdot \log P(x_i | x_{-i}) \text{, where } i \sim U(0,N), \text{, and}\\
-E[ g ] = \log PL(x)</span></p>
-</div><p>where the expectation is taken over the uniform random choice of index <span class="math">i</span>,
-and <span class="math">N</span> is the number of visible units. In order to work with binary
-units, we further introduce the notation <span class="math">\tilde{x}_i</span> to refer to
-<span class="math">x</span> with bit-i being flipped (1-&gt;0, 0-&gt;1). The log-PL for an RBM with binary units is
+<div class="math notranslate nohighlight">
+\[\begin{split}g = N \cdot \log P(x_i | x_{-i}) \text{, where } i \sim U(0,N), \text{, and}\\
+E[ g ] = \log PL(x)\end{split}\]</div>
+<p>where the expectation is taken over the uniform random choice of index <span class="math notranslate nohighlight">\(i\)</span>,
+and <span class="math notranslate nohighlight">\(N\)</span> is the number of visible units. In order to work with binary
+units, we further introduce the notation <span class="math notranslate nohighlight">\(\tilde{x}_i\)</span> to refer to
+<span class="math notranslate nohighlight">\(x\)</span> with bit-i being flipped (1-&gt;0, 0-&gt;1). The log-PL for an RBM with binary units is
 then written as:</p>
-<div class="math">
-<p><span class="math">\log PL(x) &amp;\approx N \cdot \log
+<div class="math notranslate nohighlight">
+\[\begin{split}\log PL(x) &amp;\approx N \cdot \log
    \frac {e^{-FE(x)}} {e^{-FE(x)} + e^{-FE(\tilde{x}_i)}} \\
-&amp;\approx N \cdot \log[ sigm (FE(\tilde{x}_i) - FE(x)) ]</span></p>
-</div><p>We therefore return this cost as well as the RBM updates in the  <code class="docutils literal notranslate"><span class="pre">get_cost_updates</span></code> function of the <code class="docutils literal notranslate"><span class="pre">RBM</span></code> class.
+&amp;\approx N \cdot \log[ sigm (FE(\tilde{x}_i) - FE(x)) ]\end{split}\]</div>
+<p>We therefore return this cost as well as the RBM updates in the  <code class="docutils literal notranslate"><span class="pre">get_cost_updates</span></code> function of the <code class="docutils literal notranslate"><span class="pre">RBM</span></code> class.
 Notice that we modify the updates dictionary to increment the
-index of bit <span class="math">i</span>. This will result in bit <span class="math">i</span> cycling over all possible
-values <span class="math">\{0,1,...,N\}</span>, from one update to another.</p>
+index of bit <span class="math notranslate nohighlight">\(i\)</span>. This will result in bit <span class="math notranslate nohighlight">\(i\)</span> cycling over all possible
+values <span class="math notranslate nohighlight">\(\{0,1,...,N\}\)</span>, from one update to another.</p>
 <p>Note that for CD training the cross-entropy cost between the input and the
 reconstruction (the same as the one used for the de-noising autoencoder) is more reliable then the pseudo-loglikelihood. Here is the code we use to
 compute the pseudo-likelihood:</p>
