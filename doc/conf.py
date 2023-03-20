@@ -22,7 +22,7 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.mathjax']
 
 try:
     from sphinx.ext import imgmath
@@ -194,22 +194,26 @@ latex_logo = None
 #latex_use_modindex = True
 
 default_role = 'math'
-pngmath_divpng_args = ['-gamma 1.5','-D 110']
-pngmath_latex_preamble =  '\\usepackage{amsmath}\n'+\
-                          '\\usepackage{amsfonts}\n'+\
-                          '\\usepackage{amssymb}\n'+\
-                          '\\def\\E{\\mathbf{E}}\n'+\
-                          '\\def\\F{\\mathbf{F}}\n'+\
-                          '\\def\\x{\\mathbf{x}}\n'+\
-                          '\\def\\h{\\mathbf{h}}\n'+\
-                          '\\def\\v{\\mathbf{v}}\n'+\
-                          '\\def\\nv{\\mathbf{v^{{\bf -}}}}\n'+\
-                          '\\def\\nh{\\mathbf{h^{{\bf -}}}}\n'+\
-                          '\\def\\s{\\mathbf{s}}\n'+\
-                          '\\def\\b{\\mathbf{b}}\n'+\
-                          '\\def\\c{\\mathbf{c}}\n'+\
-                          '\\def\\W{\\mathbf{W}}\n'+\
-                          '\\def\\C{\\mathbf{C}}\n'+\
-                          '\\def\\P{\\mathbf{P}}\n'+\
-                          '\\def\\T{{\\bf \\mathcal T}}\n'+\
-                          '\\def\\B{{\\bf \\mathcal B}}\n'
+try:
+    from sphinx.ext import pngmath
+    pngmath_divpng_args = ['-gamma 1.5','-D 110']
+    pngmath_latex_preamble =  '\\usepackage{amsmath}\n'+\
+                              '\\usepackage{amsfonts}\n'+\
+                              '\\usepackage{amssymb}\n'+\
+                              '\\def\\E{\\mathbf{E}}\n'+\
+                              '\\def\\F{\\mathbf{F}}\n'+\
+                              '\\def\\x{\\mathbf{x}}\n'+\
+                              '\\def\\h{\\mathbf{h}}\n'+\
+                              '\\def\\v{\\mathbf{v}}\n'+\
+                              '\\def\\nv{\\mathbf{v^{{\bf -}}}}\n'+\
+                              '\\def\\nh{\\mathbf{h^{{\bf -}}}}\n'+\
+                              '\\def\\s{\\mathbf{s}}\n'+\
+                              '\\def\\b{\\mathbf{b}}\n'+\
+                              '\\def\\c{\\mathbf{c}}\n'+\
+                              '\\def\\W{\\mathbf{W}}\n'+\
+                              '\\def\\C{\\mathbf{C}}\n'+\
+                              '\\def\\P{\\mathbf{P}}\n'+\
+                              '\\def\\T{{\\bf \\mathcal T}}\n'+\
+                              '\\def\\B{{\\bf \\mathcal B}}\n'
+except ImportError:
+    pass
