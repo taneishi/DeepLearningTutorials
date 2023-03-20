@@ -1,2 +1,2 @@
 all:
-	python scripts/docgen.py
+	sphinx-build -b html doc html
