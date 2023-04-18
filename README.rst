@@ -12,7 +12,7 @@ makes writing deep learning models easy, and gives the option of training them
 on a GPU.
 
 The easiest way to follow the tutorials is to `browse them online
-<https://github.com/taneishi/DeepLearningTutorials/>`_.
+<https://taneishi.github.io/DeepLearningTutorials/>`_.
 
 `Main development <http://github.com/lisa-lab/DeepLearningTutorials>`_
 of this project.
