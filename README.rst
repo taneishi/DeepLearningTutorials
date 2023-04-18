@@ -12,7 +12,7 @@ makes writing deep learning models easy, and gives the option of training them
 on a GPU.
 
 The easiest way to follow the tutorials is to `browse them online
-<http://deeplearning.net/tutorial/>`_.
+<https://github.com/taneishi/DeepLearningTutorials/>`_.
 
 `Main development <http://github.com/lisa-lab/DeepLearningTutorials>`_
 of this project.
@@ -37,4 +37,4 @@ Subdirectories:
 Build instructions
 ------------------
 
-To build the html version of the tutorials, run python doc/scripts/docgen.py
+To build the html version of the tutorials, run `sphinx-build doc html`
