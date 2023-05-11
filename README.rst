@@ -16,8 +16,6 @@ Theano's sample scripts included in the tutorial are a bit out of date, but can 
 Theano itself also has some useful parts for creating new frameworks, such as declarative iteration without explicit loops, 
 generating source code for nvcc and gcc to accelerate with GPUs and other accelerators, and so on.
 
-As for me personally, I worked with Intel Japan to verify speedup by assigning parallel processing to multiple cores of a CPU.
-
 Original README
 ---------------
 
