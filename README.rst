@@ -1,6 +1,21 @@
 Deep Learning Tutorials
 =======================
 
+## Note
+
+In the early days of deep learning, Theano played a major role in both practical and educational aspects.
+Although Theano is no longer under development, and the deep learning tutorials based on it have probably outlived their usefulness,
+I have made them available in the github repository for historical purposes.
+
+The only change here is that the formulas have been changed from images to javascript drawings.
+Theano's sample scripts included in the tutorial are a bit out of date, but can be easily reproduced using containers.
+
+Theano itself also has some useful parts for creating new frameworks, such as declarative iteration without explicit loops, 
+generating source code for nvcc and gcc to accelerate with GPUs and other accelerators, and so on.
+As for me personally, I worked with Intel Japan to verify speedup by assigning parallel processing to multiple cores of a CPU.
+
+## Original README
+
 Deep Learning is a new area of Machine Learning research, which has been
 introduced with the objective of moving Machine Learning closer to one of its
 original goals: Artificial Intelligence.  Deep Learning is about learning
