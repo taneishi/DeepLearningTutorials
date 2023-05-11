@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Convolutional Neural Networks (LeNet) &#8212; DeepLearning 0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxdoc.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Denoising Autoencoders (dA)" href="dA.html" />
+    <link rel="prev" title="Multilayer Perceptron" href="mlp.html" />
+ 
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-168290-9']);
+  _gaq.push(['_trackPageview']);
+</script>
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dA.html" title="Denoising Autoencoders (dA)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mlp.html" title="Multilayer Perceptron"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">DeepLearning 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Convolutional Neural Networks (LeNet)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="convolutional-neural-networks-lenet">
+<span id="lenet"></span><h1>Convolutional Neural Networks (LeNet)<a class="headerlink" href="#convolutional-neural-networks-lenet" title="Permalink to this heading">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This section assumes the reader has already read through <a class="reference internal" href="logreg.html"><span class="doc">Classifying MNIST digits using Logistic Regression</span></a> and
+<a class="reference internal" href="mlp.html"><span class="doc">Multilayer Perceptron</span></a>. Additionally, it uses the following new Theano functions and concepts:
+<a class="reference external" href="http://deeplearning.net/software/theano/tutorial/examples.html?highlight=tanh">T.tanh</a>, <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/examples.html#using-shared-variables">shared variables</a>, <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/adding.html#adding-two-scalars">basic arithmetic ops</a>, <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/examples.html#computing-gradients">T.grad</a>,
+<a class="reference external" href="http://deeplearning.net/software/theano/library/config.html#config.floatX">floatX</a>, <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/signal/pool.html">pool</a> , <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/signal/conv.html#module-conv">conv2d</a>, <a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/basic.html#tensor._tensor_py_operators.dimshuffle">dimshuffle</a>. If you intend to run the
+code on GPU also read <a class="reference external" href="http://deeplearning.net/software/theano/tutorial/using_gpu.html">GPU</a>.</p>
+<p>To run this example on a GPU, you need a good GPU. It needs
+at least 1GB of GPU RAM.  More may be required if your monitor is
+connected to the GPU.</p>
+<p>When the GPU is connected to the monitor, there is a limit
+of a few seconds for each GPU function call. This is needed as
+current GPUs can’t be used for the monitor while doing
+computation. Without this limit, the screen would freeze
+for too long and make it look as if the computer froze.
+This example hits this limit with medium-quality GPUs. When the
+GPU isn’t connected to a monitor, there is no time limit. You can
+lower the batch size to fix the time out problem.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The code for this section is available for download <a class="reference external" href="http://deeplearning.net/tutorial/code/convolutional_mlp.py">here</a> and the <a class="reference external" href="https://raw.githubusercontent.com/lisa-lab/DeepLearningTutorials/master/doc/images/3wolfmoon.jpg">3wolfmoon image</a></p>
+</div>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this heading">¶</a></h2>
+<p>Convolutional Neural Networks (CNN) are biologically-inspired variants of MLPs.
+From Hubel and Wiesel’s early work on the cat’s visual cortex <a class="reference internal" href="references.html#hubel68" id="id1"><span>[Hubel68]</span></a>, we
+know the visual cortex contains a complex arrangement of cells. These cells are
+sensitive to small sub-regions of the visual field, called a <em>receptive
+field</em>. The sub-regions are tiled to cover the entire visual field. These
+cells act as local filters over the input space and are well-suited to exploit
+the strong spatially local correlation present in natural images.</p>
+<p>Additionally, two basic cell types have been identified: Simple cells respond
+maximally to specific edge-like patterns within their receptive field. Complex
+cells have larger receptive fields and are locally invariant to the exact
+position of the pattern.</p>
+<p>The animal visual cortex being the most powerful visual processing system in
+existence, it seems natural to emulate its behavior. Hence, many
+neurally-inspired models can be found in the literature. To name a few: the
+NeoCognitron <a class="reference internal" href="references.html#fukushima" id="id2"><span>[Fukushima]</span></a>, HMAX <a class="reference internal" href="references.html#serre07" id="id3"><span>[Serre07]</span></a> and LeNet-5 <a class="reference internal" href="references.html#lecun98" id="id4"><span>[LeCun98]</span></a>, which will
+be the focus of this tutorial.</p>
+</section>
+<section id="sparse-connectivity">
+<h2>Sparse Connectivity<a class="headerlink" href="#sparse-connectivity" title="Permalink to this heading">¶</a></h2>
+<p>CNNs exploit spatially-local correlation by enforcing a local connectivity
+pattern between neurons of adjacent layers. In other words, the inputs of
+hidden units in layer <strong>m</strong> are from a subset of units in layer <strong>m-1</strong>, units
+that have spatially contiguous receptive fields. We can illustrate this
+graphically as follows:</p>
+<figure class="align-center">
+<img alt="_images/sparse_1D_nn.png" src="_images/sparse_1D_nn.png" />
+</figure>
+<p>Imagine that layer <strong>m-1</strong> is the input retina. In the above figure, units in
+layer <strong>m</strong> have receptive fields of width 3 in the input retina and are thus
+only connected to 3 adjacent neurons in the retina layer. Units in layer
+<strong>m+1</strong> have a similar connectivity with the layer below. We say that their
+receptive field with respect to the layer below is also 3, but their receptive
+field with respect to the input is larger (5). Each unit is unresponsive to
+variations outside of its receptive field with respect to the retina. The
+architecture thus ensures that the learnt “filters” produce the strongest
+response to a spatially local input pattern.</p>
+<p>However, as shown above, stacking many such layers leads to (non-linear)
+“filters” that become increasingly “global” (i.e. responsive to a larger region
+of pixel space). For example, the unit in hidden layer <strong>m+1</strong> can encode a
+non-linear feature of width 5 (in terms of pixel space).</p>
+</section>
+<section id="shared-weights">
+<h2>Shared Weights<a class="headerlink" href="#shared-weights" title="Permalink to this heading">¶</a></h2>
+<p>In addition, in CNNs, each filter <span class="math notranslate nohighlight">\(h_i\)</span> is replicated across the entire
+visual field. These replicated units share the same parameterization (weight
+vector and bias) and form a <em>feature map</em>.</p>
+<figure class="align-center">
+<img alt="_images/conv_1D_nn.png" src="_images/conv_1D_nn.png" />
+</figure>
+<p>In the above figure, we show 3 hidden units belonging to the same feature map.
+Weights of the same color are shared—constrained to be identical. Gradient
+descent can still be used to learn such shared parameters, with only a small
+change to the original algorithm. The gradient of a shared weight is simply the
+sum of the gradients of the parameters being shared.</p>
+<p>Replicating units in this way allows for features to be detected <em>regardless
+of their position in the visual field.</em> Additionally, weight sharing increases
+learning efficiency by greatly reducing the number of free parameters being
+learnt. The constraints on the model enable CNNs to achieve better
+generalization on vision problems.</p>
+</section>
+<section id="details-and-notation">
+<h2>Details and Notation<a class="headerlink" href="#details-and-notation" title="Permalink to this heading">¶</a></h2>
+<p>A feature map is obtained by repeated application of a function across
+sub-regions of the entire image, in other words, by <em>convolution</em> of the
+input image with a linear filter, adding a bias term and then applying a
+non-linear function. If we denote the k-th feature map at a given layer as
+<span class="math notranslate nohighlight">\(h^k\)</span>, whose filters are determined by the weights <span class="math notranslate nohighlight">\(W^k\)</span> and bias
+<span class="math notranslate nohighlight">\(b_k\)</span>, then the feature map <span class="math notranslate nohighlight">\(h^k\)</span> is obtained as follows (for
+<span class="math notranslate nohighlight">\(tanh\)</span> non-linearities):</p>
+<div class="math notranslate nohighlight">
+\[h^k_{ij} = \tanh ( (W^k * x)_{ij} + b_k ).\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Recall the following definition of convolution for a 1D signal.
+<span class="math notranslate nohighlight">\(o[n] = f[n]*g[n] = \sum_{u=-\infty}^{\infty} f[u] g[n-u] = \sum_{u=-\infty}^{\infty} f[n-u] g[u]\)</span>.</p>
+<p>This can be extended to 2D as follows:
+<span class="math notranslate nohighlight">\(o[m,n] = f[m,n]*g[m,n] = \sum_{u=-\infty}^{\infty} \sum_{v=-\infty}^{\infty} f[u,v] g[m-u,n-v]\)</span>.</p>
+</div>
+<p>To form a richer representation of the data, each hidden layer is composed of
+<em>multiple</em> feature maps, <span class="math notranslate nohighlight">\(\{h^{(k)}, k=0..K\}\)</span>. The weights <span class="math notranslate nohighlight">\(W\)</span> of
+a hidden layer can be represented in a 4D tensor containing elements for every
+combination of destination feature map, source feature map, source vertical
+position, and source horizontal position. The biases <span class="math notranslate nohighlight">\(b\)</span> can be
+represented as a vector containing one element for every destination feature
+map. We illustrate this graphically as follows:</p>
+<figure class="align-center" id="id5">
+<img alt="_images/cnn_explained.png" src="_images/cnn_explained.png" />
+<figcaption>
+<p><span class="caption-text"><strong>Figure 1</strong>: example of a convolutional layer</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The figure shows two layers of a CNN. <strong>Layer m-1</strong> contains four feature maps.
+<strong>Hidden layer m</strong> contains two feature maps (<span class="math notranslate nohighlight">\(h^0\)</span> and <span class="math notranslate nohighlight">\(h^1\)</span>).
+Pixels (neuron outputs) in <span class="math notranslate nohighlight">\(h^0\)</span> and <span class="math notranslate nohighlight">\(h^1\)</span> (outlined as blue and
+red squares) are computed from pixels of layer (m-1) which fall within their
+2x2 receptive field in the layer below (shown as colored rectangles). Notice
+how the receptive field spans all four input feature maps. The weights
+<span class="math notranslate nohighlight">\(W^0\)</span> and <span class="math notranslate nohighlight">\(W^1\)</span> of <span class="math notranslate nohighlight">\(h^0\)</span> and <span class="math notranslate nohighlight">\(h^1\)</span> are thus 3D weight
+tensors. The leading dimension indexes the input feature maps, while the other
+two refer to the pixel coordinates.</p>
+<p>Putting it all together, <span class="math notranslate nohighlight">\(W^{kl}_{ij}\)</span> denotes the weight connecting
+each pixel of the k-th feature map at layer m, with the pixel at coordinates
+(i,j) of the l-th feature map of layer (m-1).</p>
+</section>
+<section id="the-convolution-operator">
+<h2>The Convolution Operator<a class="headerlink" href="#the-convolution-operator" title="Permalink to this heading">¶</a></h2>
+<p>ConvOp is the main workhorse for implementing a convolutional layer in Theano.
+ConvOp is used by <code class="docutils literal notranslate"><span class="pre">theano.tensor.signal.conv2d</span></code>, which takes two symbolic inputs:</p>
+<ul class="simple">
+<li><p>a 4D tensor corresponding to a mini-batch of input images. The shape of the
+tensor is as follows: [mini-batch size, number of input feature maps, image
+height, image width].</p></li>
+<li><p>a 4D tensor corresponding to the weight matrix <span class="math notranslate nohighlight">\(W\)</span>. The shape of the
+tensor is: [number of feature maps at layer m, number of feature maps at
+layer m-1, filter height, filter width]</p></li>
+</ul>
+<p>Below is the Theano code for implementing a convolutional layer similar to the
+one of Figure 1. The input consists of 3 features maps (an RGB color image) of size
+120x160. We use two convolutional filters with 9x9 receptive fields.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
+<span class="kn">from</span> <span class="nn">theano</span> <span class="kn">import</span> <span class="n">tensor</span> <span class="k">as</span> <span class="n">T</span>
+<span class="kn">from</span> <span class="nn">theano.tensor.nnet</span> <span class="kn">import</span> <span class="n">conv2d</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">rng</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">23455</span><span class="p">)</span>
+
+<span class="c1"># instantiate 4D tensor for input</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">tensor4</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+
+<span class="c1"># initialize shared variable for weights.</span>
+<span class="n">w_shp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+<span class="n">w_bound</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">9</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
+                <span class="n">low</span><span class="o">=-</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">w_bound</span><span class="p">,</span>
+                <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">w_bound</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">w_shp</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;W&#39;</span><span class="p">)</span>
+
+<span class="c1"># initialize shared variable for bias (1D tensor) with random values</span>
+<span class="c1"># IMPORTANT: biases are usually initialized to zero. However in this</span>
+<span class="c1"># particular application, we simply apply the convolutional layer to</span>
+<span class="c1"># an image without learning the parameters. We therefore initialize</span>
+<span class="c1"># them to random values to &quot;simulate&quot; learning.</span>
+<span class="n">b_shp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="mf">.5</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">b_shp</span><span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">name</span> <span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+<span class="c1"># build symbolic expression that computes the convolution of input with filters in w</span>
+<span class="n">conv_out</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+
+<span class="c1"># build symbolic expression to add bias and apply activation function, i.e. produce neural net layer output</span>
+<span class="c1"># A few words on ``dimshuffle`` :</span>
+<span class="c1">#   ``dimshuffle`` is a powerful tool in reshaping a tensor;</span>
+<span class="c1">#   what it allows you to do is to shuffle dimension around</span>
+<span class="c1">#   but also to insert new ones along which the tensor will be</span>
+<span class="c1">#   broadcastable;</span>
+<span class="c1">#   dimshuffle(&#39;x&#39;, 2, &#39;x&#39;, 0, 1)</span>
+<span class="c1">#   This will work on 3d tensors with no broadcastable</span>
+<span class="c1">#   dimensions. The first dimension will be broadcastable,</span>
+<span class="c1">#   then we will have the third dimension of the input tensor as</span>
+<span class="c1">#   the second of the resulting tensor, etc. If the tensor has</span>
+<span class="c1">#   shape (20, 30, 40), the resulting tensor will have dimensions</span>
+<span class="c1">#   (1, 40, 1, 20, 30). (AxBxC tensor is mapped to 1xCx1xAxB tensor)</span>
+<span class="c1">#   More examples:</span>
+<span class="c1">#    dimshuffle(&#39;x&#39;) -&gt; make a 0d (scalar) into a 1d vector</span>
+<span class="c1">#    dimshuffle(0, 1) -&gt; identity</span>
+<span class="c1">#    dimshuffle(1, 0) -&gt; inverts the first and second dimensions</span>
+<span class="c1">#    dimshuffle(&#39;x&#39;, 0) -&gt; make a row out of a 1d vector (N to 1xN)</span>
+<span class="c1">#    dimshuffle(0, &#39;x&#39;) -&gt; make a column out of a 1d vector (N to Nx1)</span>
+<span class="c1">#    dimshuffle(2, 0, 1) -&gt; AxBxC to CxAxB</span>
+<span class="c1">#    dimshuffle(0, &#39;x&#39;, 1) -&gt; AxB to Ax1xB</span>
+<span class="c1">#    dimshuffle(1, &#39;x&#39;, 0) -&gt; AxB to Bx1xA</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">nnet</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">conv_out</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">dimshuffle</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">))</span>
+
+<span class="c1"># create theano function to compute filtered images</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="nb">input</span><span class="p">],</span> <span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s have a little bit of fun with this…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">pylab</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="c1"># open random image of dimensions 639x516</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;doc/images/3wolfmoon.jpg&#39;</span><span class="p">))</span>
+<span class="c1"># dimensions are (height, width, channel)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mf">256.</span>
+
+<span class="c1"># put image in 4D tensor of shape (1, 3, height, width)</span>
+<span class="n">img_</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">639</span><span class="p">,</span> <span class="mi">516</span><span class="p">)</span>
+<span class="n">filtered_img</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">img_</span><span class="p">)</span>
+
+<span class="c1"># plot original image and first and second components of output</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">pylab</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">);</span> <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">gray</span><span class="p">();</span>
+<span class="c1"># recall that the convOp output (filtered image) is actually a &quot;minibatch&quot;,</span>
+<span class="c1"># of size 1 here, so we take index 0 in the first dimension:</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="n">pylab</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">);</span> <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_img</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="n">pylab</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">);</span> <span class="n">pylab</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">filtered_img</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
+<span class="n">pylab</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This should generate the following output.</p>
+<img alt="_images/3wolfmoon_output.png" class="align-center" src="_images/3wolfmoon_output.png" />
+<p>Notice that a randomly initialized filter acts very much like an edge detector!</p>
+<p>Note that we use the same weight initialization formula as with the MLP.
+Weights are sampled randomly from a uniform distribution in the range
+[-1/fan-in, 1/fan-in], where fan-in is the number of inputs to a hidden unit.
+For MLPs, this was the number of units in the layer below. For CNNs however, we
+have to take into account the number of input feature maps and the size of the
+receptive fields.</p>
+</section>
+<section id="maxpooling">
+<h2>MaxPooling<a class="headerlink" href="#maxpooling" title="Permalink to this heading">¶</a></h2>
+<p>Another important concept of CNNs is <em>max-pooling,</em> which is a form of
+non-linear down-sampling. Max-pooling partitions the input image into
+a set of non-overlapping rectangles and, for each such sub-region, outputs the
+maximum value.</p>
+<dl>
+<dt>Max-pooling is useful in vision for two reasons:</dt><dd><ol class="arabic">
+<li><p>By eliminating non-maximal values, it reduces computation for upper layers.</p></li>
+<li><p>It provides a form of translation invariance. Imagine
+cascading a max-pooling layer with a convolutional layer. There are 8
+directions in which one can translate the input image by a single pixel.
+If max-pooling is done over a 2x2 region, 3 out of these 8 possible
+configurations will produce exactly the same output at the convolutional
+layer. For max-pooling over a 3x3 window, this jumps to 5/8.</p>
+<p>Since it provides additional robustness to position, max-pooling is a
+“smart” way of reducing the dimensionality of intermediate representations.</p>
+</li>
+</ol>
+</dd>
+</dl>
+<p>Max-pooling is done in Theano by way of
+<code class="docutils literal notranslate"><span class="pre">theano.tensor.signal.pool.pool_2d</span></code>. This function takes as input
+an N dimensional tensor (where N &gt;= 2) and a downscaling factor and performs
+max-pooling over the 2 trailing dimensions of the tensor.</p>
+<p>An example is worth a thousand words:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">theano.tensor.signal</span> <span class="kn">import</span> <span class="n">pool</span>
+
+<span class="nb">input</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">dtensor4</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">)</span>
+<span class="n">maxpool_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">pool_out</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">pool_2d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">maxpool_shape</span><span class="p">,</span> <span class="n">ignore_border</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="nb">input</span><span class="p">],</span><span class="n">pool_out</span><span class="p">)</span>
+
+<span class="n">invals</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;With ignore_border set to True:&#39;</span>
+<span class="nb">print</span> <span class="s1">&#39;invals[0, 0, :, :] =</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">invals</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="nb">print</span> <span class="s1">&#39;output[0, 0, :, :] =</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">invals</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+
+<span class="n">pool_out</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">pool_2d</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">maxpool_shape</span><span class="p">,</span> <span class="n">ignore_border</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">([</span><span class="nb">input</span><span class="p">],</span><span class="n">pool_out</span><span class="p">)</span>
+<span class="nb">print</span> <span class="s1">&#39;With ignore_border set to False:&#39;</span>
+<span class="nb">print</span> <span class="s1">&#39;invals[1, 0, :, :] =</span><span class="se">\n</span><span class="s1"> &#39;</span><span class="p">,</span> <span class="n">invals</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="nb">print</span> <span class="s1">&#39;output[1, 0, :, :] =</span><span class="se">\n</span><span class="s1"> &#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">invals</span><span class="p">)[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+</pre></div>
+</div>
+<p>This should generate the following output:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>With<span class="w"> </span>ignore_border<span class="w"> </span><span class="nb">set</span><span class="w"> </span>to<span class="w"> </span>True:
+<span class="w">    </span>invals<span class="o">[</span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>:,<span class="w"> </span>:<span class="o">]</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">[[</span><span class="w">  </span><span class="m">4</span>.17022005e-01<span class="w">   </span><span class="m">7</span>.20324493e-01<span class="w">   </span><span class="m">1</span>.14374817e-04<span class="w">   </span><span class="m">3</span>.02332573e-01<span class="w"> </span><span class="m">1</span>.46755891e-01<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w">  </span><span class="m">9</span>.23385948e-02<span class="w">   </span><span class="m">1</span>.86260211e-01<span class="w">   </span><span class="m">3</span>.45560727e-01<span class="w">   </span><span class="m">3</span>.96767474e-01<span class="w"> </span><span class="m">5</span>.38816734e-01<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w">  </span><span class="m">4</span>.19194514e-01<span class="w">   </span><span class="m">6</span>.85219500e-01<span class="w">   </span><span class="m">2</span>.04452250e-01<span class="w">   </span><span class="m">8</span>.78117436e-01<span class="w"> </span><span class="m">2</span>.73875932e-02<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w">  </span><span class="m">6</span>.70467510e-01<span class="w">   </span><span class="m">4</span>.17304802e-01<span class="w">   </span><span class="m">5</span>.58689828e-01<span class="w">   </span><span class="m">1</span>.40386939e-01<span class="w"> </span><span class="m">1</span>.98101489e-01<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w">  </span><span class="m">8</span>.00744569e-01<span class="w">   </span><span class="m">9</span>.68261576e-01<span class="w">   </span><span class="m">3</span>.13424178e-01<span class="w">   </span><span class="m">6</span>.92322616e-01<span class="w"> </span><span class="m">8</span>.76389152e-01<span class="o">]]</span>
+<span class="w">    </span>output<span class="o">[</span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>:,<span class="w"> </span>:<span class="o">]</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">[[</span><span class="w"> </span><span class="m">0</span>.72032449<span class="w">  </span><span class="m">0</span>.39676747<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.6852195<span class="w">   </span><span class="m">0</span>.87811744<span class="o">]]</span>
+
+With<span class="w"> </span>ignore_border<span class="w"> </span><span class="nb">set</span><span class="w"> </span>to<span class="w"> </span>False:
+<span class="w">    </span>invals<span class="o">[</span><span class="m">1</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>:,<span class="w"> </span>:<span class="o">]</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">[[</span><span class="w"> </span><span class="m">0</span>.01936696<span class="w">  </span><span class="m">0</span>.67883553<span class="w">  </span><span class="m">0</span>.21162812<span class="w">  </span><span class="m">0</span>.26554666<span class="w">  </span><span class="m">0</span>.49157316<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.05336255<span class="w">  </span><span class="m">0</span>.57411761<span class="w">  </span><span class="m">0</span>.14672857<span class="w">  </span><span class="m">0</span>.58930554<span class="w">  </span><span class="m">0</span>.69975836<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.10233443<span class="w">  </span><span class="m">0</span>.41405599<span class="w">  </span><span class="m">0</span>.69440016<span class="w">  </span><span class="m">0</span>.41417927<span class="w">  </span><span class="m">0</span>.04995346<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.53589641<span class="w">  </span><span class="m">0</span>.66379465<span class="w">  </span><span class="m">0</span>.51488911<span class="w">  </span><span class="m">0</span>.94459476<span class="w">  </span><span class="m">0</span>.58655504<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.90340192<span class="w">  </span><span class="m">0</span>.1374747<span class="w">   </span><span class="m">0</span>.13927635<span class="w">  </span><span class="m">0</span>.80739129<span class="w">  </span><span class="m">0</span>.39767684<span class="o">]]</span>
+<span class="w">    </span>output<span class="o">[</span><span class="m">1</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>:,<span class="w"> </span>:<span class="o">]</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">[[</span><span class="w"> </span><span class="m">0</span>.67883553<span class="w">  </span><span class="m">0</span>.58930554<span class="w">  </span><span class="m">0</span>.69975836<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.66379465<span class="w">  </span><span class="m">0</span>.94459476<span class="w">  </span><span class="m">0</span>.58655504<span class="o">]</span>
+<span class="w">     </span><span class="o">[</span><span class="w"> </span><span class="m">0</span>.90340192<span class="w">  </span><span class="m">0</span>.80739129<span class="w">  </span><span class="m">0</span>.39767684<span class="o">]]</span>
+</pre></div>
+</div>
+<p>Note that compared to most Theano code, the <code class="docutils literal notranslate"><span class="pre">max_pool_2d</span></code> operation is a
+little <em>special</em>. It requires the downscaling factor <code class="docutils literal notranslate"><span class="pre">ds</span></code> (tuple of length 2
+containing downscaling factors for image width and height) to be known at graph
+build time. This may change in the near future.</p>
+</section>
+<section id="the-full-model-lenet">
+<h2>The Full Model: LeNet<a class="headerlink" href="#the-full-model-lenet" title="Permalink to this heading">¶</a></h2>
+<p>Sparse, convolutional layers and max-pooling are at the heart of the LeNet
+family of models. While the exact details of the model will vary greatly,
+the figure below shows a graphical depiction of a LeNet model.</p>
+<img alt="_images/mylenet.png" class="align-center" src="_images/mylenet.png" />
+<p>The lower-layers are composed to alternating convolution and max-pooling
+layers. The upper-layers however are fully-connected and correspond to a
+traditional MLP (hidden layer + logistic regression). The input to the
+first fully-connected layer is the set of all features maps at the layer
+below.</p>
+<p>From an implementation point of view, this means lower-layers operate on 4D
+tensors. These are then flattened to a 2D matrix of rasterized feature maps,
+to be compatible with our previous MLP implementation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the term “convolution” could corresponds to different mathematical operations:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/nnet/conv.html#theano.tensor.nnet.conv2d">theano.tensor.nnet.conv2d</a>,
+which is the most common one in almost all of the recent published
+convolutional models.
+In this operation, each output feature map is connected to each
+input feature map by a different 2D filter, and its value is the sum of
+the individual convolution of all inputs through the corresponding filter.</p></li>
+<li><p>The convolution used in the original LeNet model: In this work,
+each output feature map is only connected to a subset of input
+feature maps.</p></li>
+<li><p>The convolution used in signal processing:
+<a class="reference external" href="http://deeplearning.net/software/theano/library/tensor/signal/conv.html#theano.tensor.signal.conv.conv2d">theano.tensor.signal.conv.conv2d</a>,
+which works only on single channel inputs.</p></li>
+</ol>
+<p>Here, we use the first operation, so this models differ slightly
+from the original LeNet paper. One reason to use 2. would be to
+reduce the amount of computation needed, but modern hardware makes
+it as fast to have the full connection pattern. Another reason would
+be to slightly reduce the number of free parameters, but we have
+other regularization techniques at our disposal.</p>
+</div>
+</section>
+<section id="putting-it-all-together">
+<h2>Putting it All Together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this heading">¶</a></h2>
+<p>We now have all we need to implement a LeNet model in Theano. We start with the
+LeNetConvPoolLayer class, which implements a {convolution + max-pooling}
+layer.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">LeNetConvPoolLayer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pool Layer of a convolutional network &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">filter_shape</span><span class="p">,</span> <span class="n">image_shape</span><span class="p">,</span> <span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allocate a LeNetConvPoolLayer with shared variable internal parameters.</span>
+
+<span class="sd">        :type rng: numpy.random.RandomState</span>
+<span class="sd">        :param rng: a random number generator used to initialize weights</span>
+
+<span class="sd">        :type input: theano.tensor.dtensor4</span>
+<span class="sd">        :param input: symbolic image tensor, of shape image_shape</span>
+
+<span class="sd">        :type filter_shape: tuple or list of length 4</span>
+<span class="sd">        :param filter_shape: (number of filters, num input feature maps,</span>
+<span class="sd">                              filter height, filter width)</span>
+
+<span class="sd">        :type image_shape: tuple or list of length 4</span>
+<span class="sd">        :param image_shape: (batch size, num input feature maps,</span>
+<span class="sd">                             image height, image width)</span>
+
+<span class="sd">        :type poolsize: tuple or list of length 2</span>
+<span class="sd">        :param poolsize: the downsampling (pooling) factor (#rows, #cols)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="n">image_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="nb">input</span>
+
+        <span class="c1"># there are &quot;num input feature maps * filter height * filter width&quot;</span>
+        <span class="c1"># inputs to each hidden unit</span>
+        <span class="n">fan_in</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">filter_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="c1"># each unit in the lower layer receives a gradient from:</span>
+        <span class="c1"># &quot;num output feature maps * filter height * filter width&quot; /</span>
+        <span class="c1">#   pooling size</span>
+        <span class="n">fan_out</span> <span class="o">=</span> <span class="p">(</span><span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">filter_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="o">//</span>
+                   <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">poolsize</span><span class="p">))</span>
+        <span class="c1"># initialize weights with random weights</span>
+        <span class="n">W_bound</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">6.</span> <span class="o">/</span> <span class="p">(</span><span class="n">fan_in</span> <span class="o">+</span> <span class="n">fan_out</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span>
+            <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=-</span><span class="n">W_bound</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">W_bound</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">filter_shape</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span>
+            <span class="p">),</span>
+            <span class="n">borrow</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># the bias is a 1D tensor -- one bias per output feature map</span>
+        <span class="n">b_values</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">filter_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">b_values</span><span class="p">,</span> <span class="n">borrow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># convolve input feature maps with filters</span>
+        <span class="n">conv_out</span> <span class="o">=</span> <span class="n">conv2d</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+            <span class="n">filters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span>
+            <span class="n">filter_shape</span><span class="o">=</span><span class="n">filter_shape</span><span class="p">,</span>
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">image_shape</span>
+        <span class="p">)</span>
+
+        <span class="c1"># pool each feature map individually, using maxpooling</span>
+        <span class="n">pooled_out</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">pool_2d</span><span class="p">(</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">conv_out</span><span class="p">,</span>
+            <span class="n">ds</span><span class="o">=</span><span class="n">poolsize</span><span class="p">,</span>
+            <span class="n">ignore_border</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># add the bias term. Since the bias is a vector (1D array), we first</span>
+        <span class="c1"># reshape it to a tensor of shape (1, n_filters, 1, 1). Each bias will</span>
+        <span class="c1"># thus be broadcasted across mini-batches and feature map</span>
+        <span class="c1"># width &amp; height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">pooled_out</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">dimshuffle</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">))</span>
+
+        <span class="c1"># store parameters of this layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">W</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">]</span>
+
+        <span class="c1"># keep track of model input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="nb">input</span>
+</pre></div>
+</div>
+<p>Notice that when initializing the weight values, the fan-in is determined by
+the size of the receptive fields and the number of input feature maps.</p>
+<p>Finally, using the LogisticRegression class defined in <a class="reference internal" href="logreg.html"><span class="doc">Classifying MNIST digits using Logistic Regression</span></a> and
+the HiddenLayer class defined in <a class="reference internal" href="mlp.html"><span class="doc">Multilayer Perceptron</span></a> , we can
+instantiate the network as follows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>    <span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>   <span class="c1"># the data is presented as rasterized images</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ivector</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>  <span class="c1"># the labels are presented as 1D vector of</span>
+                        <span class="c1"># [int] labels</span>
+
+    <span class="c1">######################</span>
+    <span class="c1"># BUILD ACTUAL MODEL #</span>
+    <span class="c1">######################</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;... building the model&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Reshape matrix of rasterized images of shape (batch_size, 28 * 28)</span>
+    <span class="c1"># to a 4D tensor, compatible with our LeNetConvPoolLayer</span>
+    <span class="c1"># (28, 28) is the size of MNIST images.</span>
+    <span class="n">layer0_input</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">))</span>
+
+    <span class="c1"># Construct the first convolutional pooling layer:</span>
+    <span class="c1"># filtering reduces the image size to (28-5+1 , 28-5+1) = (24, 24)</span>
+    <span class="c1"># maxpooling reduces this further to (24/2, 24/2) = (12, 12)</span>
+    <span class="c1"># 4D output tensor is thus of shape (batch_size, nkerns[0], 12, 12)</span>
+    <span class="n">layer0</span> <span class="o">=</span> <span class="n">LeNetConvPoolLayer</span><span class="p">(</span>
+        <span class="n">rng</span><span class="p">,</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">layer0_input</span><span class="p">,</span>
+        <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+        <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="n">nkerns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Construct the second convolutional pooling layer</span>
+    <span class="c1"># filtering reduces the image size to (12-5+1, 12-5+1) = (8, 8)</span>
+    <span class="c1"># maxpooling reduces this further to (8/2, 8/2) = (4, 4)</span>
+    <span class="c1"># 4D output tensor is thus of shape (batch_size, nkerns[1], 4, 4)</span>
+    <span class="n">layer1</span> <span class="o">=</span> <span class="n">LeNetConvPoolLayer</span><span class="p">(</span>
+        <span class="n">rng</span><span class="p">,</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">layer0</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+        <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">nkerns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span>
+        <span class="n">filter_shape</span><span class="o">=</span><span class="p">(</span><span class="n">nkerns</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">nkerns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+        <span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># the HiddenLayer being fully-connected, it operates on 2D matrices of</span>
+    <span class="c1"># shape (batch_size, num_pixels) (i.e matrix of rasterized images).</span>
+    <span class="c1"># This will generate a matrix of shape (batch_size, nkerns[1] * 4 * 4),</span>
+    <span class="c1"># or (500, 50 * 4 * 4) = (500, 800) with the default values.</span>
+    <span class="n">layer2_input</span> <span class="o">=</span> <span class="n">layer1</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># construct a fully-connected sigmoidal layer</span>
+    <span class="n">layer2</span> <span class="o">=</span> <span class="n">HiddenLayer</span><span class="p">(</span>
+        <span class="n">rng</span><span class="p">,</span>
+        <span class="nb">input</span><span class="o">=</span><span class="n">layer2_input</span><span class="p">,</span>
+        <span class="n">n_in</span><span class="o">=</span><span class="n">nkerns</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">n_out</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="n">T</span><span class="o">.</span><span class="n">tanh</span>
+    <span class="p">)</span>
+
+    <span class="c1"># classify the values of the fully-connected sigmoidal layer</span>
+    <span class="n">layer3</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">layer2</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">n_in</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">n_out</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># the cost we minimize during training is the NLL of the model</span>
+    <span class="n">cost</span> <span class="o">=</span> <span class="n">layer3</span><span class="o">.</span><span class="n">negative_log_likelihood</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="c1"># create a function to compute the mistakes that are made by the model</span>
+    <span class="n">test_model</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">index</span><span class="p">],</span>
+        <span class="n">layer3</span><span class="o">.</span><span class="n">errors</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+        <span class="n">givens</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">test_set_x</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">],</span>
+            <span class="n">y</span><span class="p">:</span> <span class="n">test_set_y</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">validate_model</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">index</span><span class="p">],</span>
+        <span class="n">layer3</span><span class="o">.</span><span class="n">errors</span><span class="p">(</span><span class="n">y</span><span class="p">),</span>
+        <span class="n">givens</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">valid_set_x</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">],</span>
+            <span class="n">y</span><span class="p">:</span> <span class="n">valid_set_y</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="c1"># create a list of all model parameters to be fit by gradient descent</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">layer3</span><span class="o">.</span><span class="n">params</span> <span class="o">+</span> <span class="n">layer2</span><span class="o">.</span><span class="n">params</span> <span class="o">+</span> <span class="n">layer1</span><span class="o">.</span><span class="n">params</span> <span class="o">+</span> <span class="n">layer0</span><span class="o">.</span><span class="n">params</span>
+
+    <span class="c1"># create a list of gradients for all model parameters</span>
+    <span class="n">grads</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span><span class="n">cost</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+    <span class="c1"># train_model is a function that updates the model parameters by</span>
+    <span class="c1"># SGD Since this model has many parameters, it would be tedious to</span>
+    <span class="c1"># manually create an update rule for each model parameter. We thus</span>
+    <span class="c1"># create the updates list by automatically looping over all</span>
+    <span class="c1"># (params[i], grads[i]) pairs.</span>
+    <span class="n">updates</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">param_i</span><span class="p">,</span> <span class="n">param_i</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad_i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param_i</span><span class="p">,</span> <span class="n">grad_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">train_model</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">index</span><span class="p">],</span>
+        <span class="n">cost</span><span class="p">,</span>
+        <span class="n">updates</span><span class="o">=</span><span class="n">updates</span><span class="p">,</span>
+        <span class="n">givens</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">train_set_x</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">],</span>
+            <span class="n">y</span><span class="p">:</span> <span class="n">train_set_y</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>We leave out the code that performs the actual training and early-stopping,
+since it is exactly the same as with an MLP. The interested reader can
+nevertheless access the code in the ‘code’ folder of DeepLearningTutorials.</p>
+</section>
+<section id="running-the-code">
+<h2>Running the Code<a class="headerlink" href="#running-the-code" title="Permalink to this heading">¶</a></h2>
+<p>The user can then run the code by calling:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>code/convolutional_mlp.py
+</pre></div>
+</div>
+<p>The following output was obtained with the default parameters on a Core i7-2600K
+CPU clocked at 3.40GHz and using flags ‘floatX=float32’:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Optimization<span class="w"> </span>complete.
+Best<span class="w"> </span>validation<span class="w"> </span>score<span class="w"> </span>of<span class="w"> </span><span class="m">0</span>.910000<span class="w"> </span>%<span class="w"> </span>obtained<span class="w"> </span>at<span class="w"> </span>iteration<span class="w"> </span><span class="m">17800</span>,with<span class="w"> </span><span class="nb">test</span>
+performance<span class="w"> </span><span class="m">0</span>.920000<span class="w"> </span>%
+The<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span>convolutional_mlp.py<span class="w"> </span>ran<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="m">380</span>.28m
+</pre></div>
+</div>
+<p>Using a GeForce GTX 285, we obtained the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Optimization<span class="w"> </span>complete.
+Best<span class="w"> </span>validation<span class="w"> </span>score<span class="w"> </span>of<span class="w"> </span><span class="m">0</span>.910000<span class="w"> </span>%<span class="w"> </span>obtained<span class="w"> </span>at<span class="w"> </span>iteration<span class="w"> </span><span class="m">15500</span>,with<span class="w"> </span><span class="nb">test</span>
+performance<span class="w"> </span><span class="m">0</span>.930000<span class="w"> </span>%
+The<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span>convolutional_mlp.py<span class="w"> </span>ran<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="m">46</span>.76m
+</pre></div>
+</div>
+<p>And similarly on a GeForce GTX 480:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Optimization<span class="w"> </span>complete.
+Best<span class="w"> </span>validation<span class="w"> </span>score<span class="w"> </span>of<span class="w"> </span><span class="m">0</span>.910000<span class="w"> </span>%<span class="w"> </span>obtained<span class="w"> </span>at<span class="w"> </span>iteration<span class="w"> </span><span class="m">16400</span>,with<span class="w"> </span><span class="nb">test</span>
+performance<span class="w"> </span><span class="m">0</span>.930000<span class="w"> </span>%
+The<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span>file<span class="w"> </span>convolutional_mlp.py<span class="w"> </span>ran<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="m">32</span>.52m
+</pre></div>
+</div>
+<p>Note that the discrepancies in validation and test error (as well as iteration
+count) are due to different implementations of the rounding mechanism in
+hardware. They can be safely ignored.</p>
+</section>
+<section id="tips-and-tricks">
+<h2>Tips and Tricks<a class="headerlink" href="#tips-and-tricks" title="Permalink to this heading">¶</a></h2>
+<section id="choosing-hyperparameters">
+<h3>Choosing Hyperparameters<a class="headerlink" href="#choosing-hyperparameters" title="Permalink to this heading">¶</a></h3>
+<p>CNNs are especially tricky to train, as they add even more hyper-parameters than
+a standard MLP. While the usual rules of thumb for learning rates and
+regularization constants still apply, the following should be kept in mind when
+optimizing CNNs.</p>
+<section id="number-of-filters">
+<h4>Number of filters<a class="headerlink" href="#number-of-filters" title="Permalink to this heading">¶</a></h4>
+<p>When choosing the number of filters per layer, keep in mind that computing the
+activations of a single convolutional filter is much more expensive than with
+traditional MLPs !</p>
+<p>Assume layer <span class="math notranslate nohighlight">\((l-1)\)</span> contains <span class="math notranslate nohighlight">\(K^{l-1}\)</span> feature
+maps and <span class="math notranslate nohighlight">\(M \times N\)</span> pixel positions (i.e.,
+number of positions times number of feature maps),
+and there are <span class="math notranslate nohighlight">\(K^l\)</span> filters at layer <span class="math notranslate nohighlight">\(l\)</span> of shape <span class="math notranslate nohighlight">\(m \times n\)</span>.
+Then computing a feature map (applying an <span class="math notranslate nohighlight">\(m \times n\)</span> filter
+at all <span class="math notranslate nohighlight">\((M-m) \times (N-n)\)</span> pixel positions where the
+filter can be applied) costs <span class="math notranslate nohighlight">\((M-m) \times (N-n) \times m \times n \times K^{l-1}\)</span>.
+The total cost is <span class="math notranslate nohighlight">\(K^l\)</span> times that. Things may be more complicated if
+not all features at one level are connected to all features at the previous one.</p>
+<p>For a standard MLP, the cost would only be <span class="math notranslate nohighlight">\(K^l \times K^{l-1}\)</span>
+where there are <span class="math notranslate nohighlight">\(K^l\)</span> different neurons at level <span class="math notranslate nohighlight">\(l\)</span>.
+As such, the number of filters used in CNNs is typically much
+smaller than the number of hidden units in MLPs and depends on the size of the
+feature maps (itself a function of input image size and filter shapes).</p>
+<p>Since feature map size decreases with depth, layers near the input layer will tend to
+have fewer filters while layers higher up can have much more. In fact, to
+equalize computation at each layer, the product of the number of features
+and the number of pixel positions is typically picked to be roughly constant
+across layers. To preserve the information about the input would require
+keeping the total number of activations (number of feature maps times
+number of pixel positions) to be non-decreasing from one layer to the next
+(of course we could hope to get away with less when we are doing supervised
+learning). The number of feature maps directly controls capacity and so
+that depends on the number of available examples and the complexity of
+the task.</p>
+</section>
+<section id="filter-shape">
+<h4>Filter Shape<a class="headerlink" href="#filter-shape" title="Permalink to this heading">¶</a></h4>
+<p>Common filter shapes found in the literature vary greatly, usually based on
+the dataset. Best results on MNIST-sized images (28x28) are usually in the 5x5
+range on the first layer, while natural image datasets (often with hundreds of pixels in each
+dimension) tend to use larger first-layer filters of shape 12x12 or 15x15.</p>
+<p>The trick is thus to find the right level of “granularity” (i.e. filter
+shapes) in order to create abstractions at the proper scale, given a
+particular dataset.</p>
+</section>
+<section id="max-pooling-shape">
+<h4>Max Pooling Shape<a class="headerlink" href="#max-pooling-shape" title="Permalink to this heading">¶</a></h4>
+<p>Typical values are 2x2 or no max-pooling. Very large input images may warrant
+4x4 pooling in the lower-layers. Keep in mind however, that this will reduce the
+dimension of the signal by a factor of 16, and may result in throwing away too
+much information.</p>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="f1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>For clarity, we use the word “unit” or “neuron” to refer to the
+artificial neuron and “cell” to refer to the biological neuron.</p>
+</aside>
+</aside>
+</section>
+<section id="tips">
+<h4>Tips<a class="headerlink" href="#tips" title="Permalink to this heading">¶</a></h4>
+<p>If you want to try this model on a new dataset, here are a few tips that can help you get better results:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Whitening the data (e.g. with PCA)</p></li>
+<li><p>Decay the learning rate in each epoch</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="contents.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Convolutional Neural Networks (LeNet)</a><ul>
+<li><a class="reference internal" href="#motivation">Motivation</a></li>
+<li><a class="reference internal" href="#sparse-connectivity">Sparse Connectivity</a></li>
+<li><a class="reference internal" href="#shared-weights">Shared Weights</a></li>
+<li><a class="reference internal" href="#details-and-notation">Details and Notation</a></li>
+<li><a class="reference internal" href="#the-convolution-operator">The Convolution Operator</a></li>
+<li><a class="reference internal" href="#maxpooling">MaxPooling</a></li>
+<li><a class="reference internal" href="#the-full-model-lenet">The Full Model: LeNet</a></li>
+<li><a class="reference internal" href="#putting-it-all-together">Putting it All Together</a></li>
+<li><a class="reference internal" href="#running-the-code">Running the Code</a></li>
+<li><a class="reference internal" href="#tips-and-tricks">Tips and Tricks</a><ul>
+<li><a class="reference internal" href="#choosing-hyperparameters">Choosing Hyperparameters</a><ul>
+<li><a class="reference internal" href="#number-of-filters">Number of filters</a></li>
+<li><a class="reference internal" href="#filter-shape">Filter Shape</a></li>
+<li><a class="reference internal" href="#max-pooling-shape">Max Pooling Shape</a></li>
+<li><a class="reference internal" href="#tips">Tips</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="mlp.html"
+                          title="previous chapter">Multilayer Perceptron</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="dA.html"
+                          title="next chapter">Denoising Autoencoders (dA)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/lenet.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dA.html" title="Denoising Autoencoders (dA)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mlp.html" title="Multilayer Perceptron"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="contents.html">DeepLearning 0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Convolutional Neural Networks (LeNet)</a></li> 
+      </ul>
+    </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2008--2010, LISA lab.
+      Last updated on May 11, 2023.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+<script type="text/javascript">
+  (function() {
+    var ga = document.createElement('script');
+    ga.src = ('https:' == document.location.protocol ?
+              'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    ga.setAttribute('async', 'true');
+    document.documentElement.firstChild.appendChild(ga);
+  })();
+</script>
+
+  </body>
+</html>

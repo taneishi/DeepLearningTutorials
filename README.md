@@ -6,7 +6,7 @@ In the early days of deep learning, Theano played a major role in both practical
 Although Theano is no longer under development, and the deep learning tutorials based on it have probably outlived their usefulness,
 I have made them available in the github repository for historical purposes.
 
-[Deep Learning Tutorials](https://taneishi.github.io/DeepLearningTutorials/)
+[Deep Learning Tutorials](https://taneishi.github.io/DeepLearningTutorials/html/)
 
 The only change here is that the formulas have been changed from images to javascript drawings.
 Theano's sample scripts included in the tutorial are a bit out of date, but can be easily reproduced using containers.

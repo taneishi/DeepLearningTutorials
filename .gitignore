@@ -10,6 +10,8 @@ data/mnist_py3k.pkl.gz
 data/Nottingham.zip
 data/Nottingham
 data/midi.zip
+data/imdb.pkl
+data/imdb.dict.pkl
 #html
 *.pyc
 *~
