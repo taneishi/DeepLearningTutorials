@@ -3,16 +3,14 @@
 ## Note
 
 In the early days of deep learning, **Theano** played a major role in both practical and educational aspects.
-Although Theano is no longer under development, and the deep learning tutorials based on it have probably outlived their usefulness,
-I have made them available in the github repository for historical purposes.
+Although Theano is no longer in development, and this deep learning tutorials based on it may not be very practical,
+but keeps it as a reference for early deep learning implementations.
+The only change here is that the equations have been changed from images to javascript renderings.
 
 [Deep Learning Tutorials](https://taneishi.github.io/DeepLearningTutorials/html/)
 
-The only change here is that the formulas have been changed from images to javascript drawings.
-Theano's sample scripts included in the tutorial are a bit out of date, but can be easily reproduced using containers.
-
-Theano itself also has some useful parts for creating new frameworks, such as declarative iteration without explicit loops, 
-generating source code for nvcc and gcc to accelerate with GPUs and other accelerators, and so on.
+Theano itself also has some useful parts for creating new frameworks, such as declarative iteration without explicit loops,
+generating source code for `nvcc` and `gcc` to accelerate with GPUs and other accelerators..
 
 ## Original Description
 
@@ -27,8 +25,6 @@ makes writing deep learning models easy, and gives the option of training them
 on a GPU.
 
 [Main development](http://github.com/lisa-lab/DeepLearningTutorials) of this project.
-
-[![http://travis-ci.org/lisa-lab/DeepLearningTutorials]](https://secure.travis-ci.org/lisa-lab/DeepLearningTutorials.png)
 
 ## Project Layout
 
